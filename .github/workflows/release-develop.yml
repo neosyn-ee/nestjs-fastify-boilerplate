@@ -28,8 +28,8 @@ jobs:
           npm i -g corepack
           yarn install
 
-      - name: Set env dev
-        run: yarn setDevelopment
+      - name: Run build
+        run: yarn build-develop
 
       - name: Upload application
         uses: actions/upload-artifact@v4
@@ -40,5 +40,5 @@ jobs:
 
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DAVIDECARETOKEN }}
         run: npx semantic-release
