@@ -1,0 +1,44 @@
+name: Release dev
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write # to be able to publish a GitHub release
+  issues: write # to be able to comment on released issues
+  pull-requests: write # to be able to comment on released pull requests
+  id-token: write # to enable use of OIDC for npm provenance
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: 'yarn'
+
+      - name: Run Yarn Install
+        run: |
+          npm i -g corepack
+          yarn install
+
+      - name: Set env dev
+        run: yarn setDevelopment
+
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifact-dev
+          path: dist/
+          retention-days: 3
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
