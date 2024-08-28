@@ -35,7 +35,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json 
-          container-name: nodejs-app
+          container-name: ProdBoilerplateNestjs
           image: ${{ steps.build-image.outputs.image }} 
 
       - name: Amazon ECS "Deploy Task Definition" Action for GitHub Actions
