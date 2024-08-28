@@ -29,6 +29,7 @@ jobs:
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
+          REPOSITORY: neosyn/boilerplate-nestjs
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
