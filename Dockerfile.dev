@@ -5,7 +5,7 @@ FROM node:20.15.1-alpine3.20
 WORKDIR /usr/src/app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+COPY yarn.lock ./
 
 # Install app dependencies
 RUN yarn install
