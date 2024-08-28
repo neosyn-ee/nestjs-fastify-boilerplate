@@ -1,8 +1,6 @@
 name: Deploy NestJS Microservice to AWS ECS
-on:
-  push:
-    branches: [develop, main]
-  workflow_dispatch:
+on: [workflow_dispatch]
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,6 +19,7 @@ jobs:
           registry-id: ${{ secrets.AWS_ACCOUNT_ID }}
 
       - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         run: |
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.dev .
           docker push $ECR_REPOSITORY:$IMAGE_TAG
@@ -28,12 +27,21 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
 
-      - name: Amazon ECS "Deploy Task Definition" Action for GitHub Actions
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2.0.0
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ProdBoilerplateNestjs
+          task-definition: task-definition.json 
+          container-name: nodejs-app
+          image: ${{ steps.build-image.outputs.image }} 
+
+      - name: Amazon ECS "Deploy Task Definition" Action for GitHub Actions
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ProdBoilerplateNestjs
           cluster: ProdBoilerplateNestjs
+          wait-for-service-stability: true
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
