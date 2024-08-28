@@ -22,12 +22,12 @@ jobs:
           yarn install
 
       - name: Run build
-        run: yarn build-develop
+        run: yarn build-prod
 
       - name: Upload application
         uses: actions/upload-artifact@v4
         with:
-          name: app-artifact-dev
+          name: app-artifact-prod
           path: dist/
           retention-days: 3
 
@@ -55,7 +55,7 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.dev .
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f dockerfile.prod .
           docker push $ECR_REPOSITORY:$IMAGE_TAG
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
