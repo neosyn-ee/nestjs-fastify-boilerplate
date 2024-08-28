@@ -34,7 +34,7 @@ jobs:
           task-definition: ProdBoilerplateNestjs
           container-name: ProdBoilerplateNestjs
           image: $ECR_REPOSITORY:$IMAGE_TAG
-          service: boilerplate-nestjs-service
+          service: ProdBoilerplateNestjs
           cluster: ProdBoilerplateNestjs
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
