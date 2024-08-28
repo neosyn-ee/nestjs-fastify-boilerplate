@@ -32,8 +32,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.0.0
         with:
           task-definition: ProdBoilerplateNestjs
-          container-name: ProdBoilerplateNestjs
-          image: $ECR_REPOSITORY:$IMAGE_TAG
           service: ProdBoilerplateNestjs
           cluster: ProdBoilerplateNestjs
         env:
