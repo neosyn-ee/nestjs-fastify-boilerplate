@@ -13,27 +13,29 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: ${{ secrets.AWS_REGION }}
-          aws-region: ''
-      - name: Login to Amazon ECR #Quello che in teoria dovrebbe farci accedere ad ECR in qualche modo
-        uses: aws-actions/amazon-ecr-login@v4
+          aws-region: 'eu-central-1'
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-id: ${{ secrets.AWS_ACCOUNT_ID }}
+
       - name: Build, tag, and push image to Amazon ECR
         run: |
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REPOSITORY:$IMAGE_TAG
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}  # Non so se c'è un modo migliore di fare questa cosa
+          IMAGE_TAG: ${{ github.sha }}
+
       - name: Deploy to ECS
         uses: aws-actions/amazon-ecs-task-definition@v1
         with:
-          task-definition: Definizione-del-task
-          container-name: nome-del-container-che-non-so-mai-nella-vita-forever
+          task-definition: ProdBoilerplateNestjs
+          container-name: ProdBoilerplateNestjs
           image: $ECR_REPOSITORY:$IMAGE_TAG
-          service: nome-del-servizio-puzzone
-          cluster: il-cluster-piu-megagalattico-dell-universo
+          service: boilerplate-nestjs-service
+          cluster: ProdBoilerplateNestjs
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
