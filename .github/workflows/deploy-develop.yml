@@ -1,4 +1,4 @@
-name: Deploy NestJS Microservice to AWS ECS test
+name: Deploy NestJS Microservice to AWS ECS
 on:
   push:
     branches: [feature/EA-35]
