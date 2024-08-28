@@ -35,8 +35,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.DAVIDECARETOKEN }}
         run: npx semantic-release
-        
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
