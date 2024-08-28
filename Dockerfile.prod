@@ -1,0 +1,28 @@
+FROM --platform=linux/amd64 node:18.19.0-slim  AS build_amd64
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --chown=node:node package.json yarn.lock ./
+
+RUN yarn install --frozen-lockfile --production
+
+COPY --chown=node:node . .
+
+RUN yarn build
+
+EXPOSE 3000
+
+CMD [ "yarn", "start:prod" ]
+
+FROM --platform=linux/amd64 node:18.19.0-slim AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --chown=node:node --from=build_amd64 /app/dist ./dist
+COPY --chown=node:node --from=build_amd64 /app/node_modules ./node_modules
+
+CMD ["node", "dist/main.js"]
