@@ -8,6 +8,8 @@ COPY --chown=node:node package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile --production
 
+RUN yarn install @nestjs/cli
+
 COPY --chown=node:node . .
 
 RUN yarn build
