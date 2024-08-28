@@ -1,5 +1,7 @@
-name: Deploy NestJS Microservice to AWS ECS
-on: [workflow_dispatch]
+name: Deploy NestJS Microservice to AWS ECS test
+on:
+  push:
+    branches: [feature/EA-35]
 
 jobs:
   deploy:
