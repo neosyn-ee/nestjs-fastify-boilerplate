@@ -20,7 +20,7 @@ COPY . .
 RUN yarn build
 
 # Expose the port on which the app will run
-EXPOSE 80
+EXPOSE 3000
 
 # Start the server using the production build
 CMD ["yarn", "run", "start:dev"]
