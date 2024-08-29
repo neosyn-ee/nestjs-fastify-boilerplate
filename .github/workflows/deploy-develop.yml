@@ -1,7 +1,7 @@
 name: Deploy NestJS Microservice to AWS ECS
 on:
   push:
-    branches: [feature/EA-35]
+    branches: [develop]
 
 jobs:
   deploy:
