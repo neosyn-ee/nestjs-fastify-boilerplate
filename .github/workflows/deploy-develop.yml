@@ -1,8 +1,8 @@
 name: Deploy NestJS Microservice to AWS ECS
 on:
   push:
-    branches: [develop, main]
-  workflow_dispatch:
+    branches: [develop]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -49,24 +49,40 @@ jobs:
           aws-region: 'eu-central-1'
 
       - name: Login to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          registry-id: ${{ secrets.AWS_ACCOUNT_ID }}
+          mask-password: 'true'
 
       - name: Build, tag, and push image to Amazon ECR
-        run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f dockerfile.prod .
-          docker push $ECR_REPOSITORY:$IMAGE_TAG
+        id: build-image
         env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          REPOSITORY: neosyn/boilerplate-nestjs
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG -f Dockerfile.dev .
+          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT    
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json 
+          container-name: ProdBoilerplateNestjs
+          image: ${{ steps.build-image.outputs.image }} 
 
       - name: Amazon ECS "Deploy Task Definition" Action for GitHub Actions
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2.0.0
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ProdBoilerplateNestjs
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ProdBoilerplateNestjs
           cluster: ProdBoilerplateNestjs
+          wait-for-service-stability: true
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
