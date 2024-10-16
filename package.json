@@ -24,11 +24,13 @@
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
+    "@nestjs/class-validator": "^0.13.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-fastify": "^10.4.1",
-    "@nestjs/swagger": "^7.4.0",
+    "@nestjs/swagger": "^7.4.2",
+    "class-transformer": "^0.5.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
