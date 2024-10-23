@@ -8,7 +8,7 @@ import {
   MinLength,
   validateSync,
 } from 'class-validator';
-import { Environment } from './config';
+import { Environment } from './config.enum';
 
 class EnvironmentVariables {
   /* APP CONFIG */

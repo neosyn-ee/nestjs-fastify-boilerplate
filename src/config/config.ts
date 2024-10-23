@@ -1,33 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { AppConfig, DatabaseConfig } from './config.interface';
-
-export type Leaves<T> = T extends object
-  ? {
-      [K in keyof T]: `${Exclude<K, symbol>}${Leaves<T[K]> extends never
-        ? ''
-        : `.${Leaves<T[K]>}`}`;
-    }[keyof T]
-  : never;
-
-export type LeafTypes<T, S extends string> = S extends `${infer T1}.${infer T2}`
-  ? T1 extends keyof T
-    ? LeafTypes<T[T1], T2>
-    : never
-  : S extends keyof T
-    ? T[S]
-    : never;
-
-export enum ConfigKey {
-  App = 'APP',
-  Db = 'DB',
-}
-
-export enum Environment {
-  Local = 'local',
-  Development = 'development',
-  Beta = 'beta',
-  Production = 'production',
-}
+import { ConfigKey, Environment } from './config.enum';
 
 const APPConfig = registerAs(
   ConfigKey.App,
@@ -48,6 +21,7 @@ const DBConfig = registerAs(
     username: process.env.DATABASE_USERNAME || 'postgres',
     password: process.env.DATABASE_PASSWORD || 'postgres',
     database: process.env.DATABASE || 'postgres',
+    databaseUrl: process.env.DATABASE_URL || '',
   }),
 );
 

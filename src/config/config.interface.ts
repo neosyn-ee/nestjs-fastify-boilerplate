@@ -1,4 +1,4 @@
-import { Environment } from './config';
+import { Environment } from './config.enum';
 
 export interface AppConfig {
   env: Environment;
@@ -11,6 +11,5 @@ export interface DatabaseConfig {
   username: string;
   password: string;
   database: string;
+  databaseUrl: string;
 }
-
-export type EnvironmentVariables = AppConfig & DatabaseConfig;

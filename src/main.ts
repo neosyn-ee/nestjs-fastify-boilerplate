@@ -5,7 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { ConfigService } from '@nestjs/config';
+import { TypedConfigService } from './config/typed-config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -13,8 +13,8 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
   );
 
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('APP.port', 3000);
+  const configService = app.get(TypedConfigService);
+  const port = configService.get('APP.port');
 
   const config = new DocumentBuilder()
     .setTitle('Test example')
@@ -26,7 +26,7 @@ async function bootstrap() {
     jsonDocumentUrl: 'swagger/json',
   });
 
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port ?? 3000, '0.0.0.0');
   console.log(`This application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
