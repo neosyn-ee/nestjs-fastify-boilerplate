@@ -9,7 +9,7 @@ import { TypedConfigService } from './typed-config.service';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [...configurations],
-      envFilePath: ['.env.development', '.env.beta', '.env.production'],
+      envFilePath: ['.env.development', '.env.uat', '.env.production'],
       cache: true,
       validate: validateConfig,
     }),

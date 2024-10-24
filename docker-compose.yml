@@ -9,8 +9,6 @@ services:
     restart: "unless-stopped"
     depends_on:
       - server
-    networks:
-      - shared_network
   server:
     container_name: server
     build:
@@ -22,8 +20,16 @@ services:
       - ./:/app
       - /app/node_modules
     restart: "unless-stopped"
-    networks:
-      - shared_network
-networks:
-  shared_network:
-    external: true
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+volumes:
+  db_data:
