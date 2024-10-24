@@ -20,7 +20,7 @@ const DBConfig = registerAs(
     port: Number(process.env.DATABASE_PORT) || 5432,
     username: process.env.DATABASE_USERNAME || 'postgres',
     password: process.env.DATABASE_PASSWORD || 'postgres',
-    database: process.env.DATABASE || 'postgres',
+    databaseName: process.env.DATABASE || 'postgres',
     databaseUrl: process.env.DATABASE_URL || '',
   }),
 );

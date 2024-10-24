@@ -10,6 +10,6 @@ export interface DatabaseConfig {
   port: number;
   username: string;
   password: string;
-  database: string;
+  databaseName: string;
   databaseUrl: string;
 }
