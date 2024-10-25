@@ -1,3 +1,5 @@
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient, Role, User } from '@prisma/client';
 import BaseAbstractRepository from 'src/database/base.abstract.repository';
@@ -14,7 +16,10 @@ export class UserRepository extends BaseAbstractRepository<
   DelegateArgs<UserDelegate>,
   DelegateReturnTypes<UserDelegate>
 > {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(
+    protected readonly prisma: PrismaClient,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+  ) {
     super(prisma.user);
   }
 

@@ -24,9 +24,10 @@
     "prisma:pull:uat": "dotenv -e .env.uat -- npx prisma db pull",
     "prisma:pull:prod": "dotenv -e .env.production -- npx prisma db pull",
     "prisma:generate:dev": "dotenv -e .env.development -- npx prisma generate",
-    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev --name init",
-    "migrate:uat": "dotenv -e .env.uat -- npx prisma migrate dev --name init",
-    "migrate:prod": "dotenv -e .env.production -- npx prisma migrate dev --name init"
+    "prisma:migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev --name init",
+    "prisma:migrate:uat": "dotenv -e .env.uat -- npx prisma migrate dev --name init",
+    "prisma:migrate:prod": "dotenv -e .env.production -- npx prisma migrate dev --name init",
+    "prisma:seed:dev": "dotenv -e .env.development -- ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",

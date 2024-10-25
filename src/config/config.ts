@@ -18,11 +18,6 @@ const APPConfig = registerAs(
 const DBConfig = registerAs(
   ConfigKey.Db,
   (): DatabaseConfig => ({
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: Number(process.env.DATABASE_PORT) || 5432,
-    username: process.env.DATABASE_USERNAME || 'postgres',
-    password: process.env.DATABASE_PASSWORD || 'postgres',
-    databaseName: process.env.DATABASE || 'postgres',
     databaseUrl: process.env.DATABASE_URL || '',
   }),
 );

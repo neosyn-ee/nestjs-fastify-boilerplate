@@ -16,7 +16,7 @@ export class UserController {
     description: 'User retrieved successfully.',
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async getUser(@Param('id') id: number): Promise<User | null> {
-    return this.userService.getUser(id);
+  async getUser(@Param('id') id: string): Promise<User | null> {
+    return this.userService.getUser(Number(id));
   }
 }

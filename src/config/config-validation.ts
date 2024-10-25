@@ -1,6 +1,5 @@
 import { plainToClass } from 'class-transformer';
 import {
-  IsAlpha,
   IsDefined,
   IsEnum,
   IsNumberString,
@@ -27,31 +26,6 @@ class EnvironmentVariables {
   APP_NAME: string;
 
   /* DATA CONFIG */
-  @IsDefined()
-  @IsNumberString()
-  @MinLength(1)
-  DATABASE_PORT: string;
-
-  @IsDefined()
-  @IsString()
-  @MinLength(1)
-  DATABASE_HOST: string;
-
-  @IsDefined()
-  @IsAlpha()
-  @MinLength(1)
-  DATABASE_USERNAME: string;
-
-  @IsDefined()
-  @IsString()
-  @MinLength(1)
-  DATABASE_PASSWORD: string;
-
-  @IsDefined()
-  @IsString()
-  @MinLength(1)
-  DATABASE_NAME: string;
-
   @IsDefined()
   @IsString()
   @MinLength(1)
