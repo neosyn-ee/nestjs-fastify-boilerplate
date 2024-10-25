@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ExamplefeatureController } from './examplefeature.controller';
-import { ExamplefeatureService } from './examplefeature.service';
+import { ExampleFeatureService } from './examplefeature.service';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [],
   controllers: [ExamplefeatureController],
-  providers: [ExamplefeatureService],
+  providers: [ExampleFeatureService,LoggerService],
 })
 export class ExamplefeatureModule {}

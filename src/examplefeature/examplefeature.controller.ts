@@ -1,17 +1,17 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ExamplefeatureService } from './examplefeature.service';
+import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { ExampleFeatureService } from './examplefeature.service';
 import { ExampleFeatureInsertInputDto } from './dto/exampleFeatureInsertInput.dto';
 
 @Controller('Example')
 export class ExamplefeatureController {
-  constructor(private readonly examplefeatureService: ExamplefeatureService) {}
+  constructor(private readonly exampleFeatureService: ExampleFeatureService) {}
 
   @Get('test')
   async getExample(): Promise<string> {
-    return this.examplefeatureService.getHello();
+    return this.exampleFeatureService.getHello();
   }
   @Post()
   async insertHello(@Body() exampleFeatureInsertInputDto: ExampleFeatureInsertInputDto): Promise<string> {
-    return "post service";
+    throw new HttpException('Forbidden', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

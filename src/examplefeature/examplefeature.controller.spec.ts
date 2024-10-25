@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExamplefeatureController } from './examplefeature.controller';
-import { ExamplefeatureService } from './examplefeature.service';
+import { ExampleFeatureService } from './examplefeature.service';
 
 describe('AppController', () => {
   let examplefeatureController: ExamplefeatureController;
@@ -8,7 +8,7 @@ describe('AppController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [ExamplefeatureController],
-      providers: [ExamplefeatureService],
+      providers: [ExampleFeatureService],
     }).compile();
 
     examplefeatureController = app.get<ExamplefeatureController>(ExamplefeatureController);
