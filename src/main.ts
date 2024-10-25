@@ -9,7 +9,7 @@ import {
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: false }),
   );
 
   const config = new DocumentBuilder()
@@ -22,6 +22,6 @@ async function bootstrap() {
     jsonDocumentUrl: 'swagger/json',
   });
 
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(3002, '0.0.0.0');
 }
 bootstrap();
