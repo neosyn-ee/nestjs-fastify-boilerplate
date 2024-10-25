@@ -14,19 +14,22 @@ async function bootstrap() {
   );
 
   const configService = app.get(TypedConfigService);
-  const port = configService.get('APP.port');
+  const appPort = configService.get('APP.port');
+  const appName = configService.get('APP.name');
+  const appVersion = configService.get('APP.version');
+  const appDescription = configService.get('APP.description');
 
   const config = new DocumentBuilder()
-    .setTitle('Test example')
-    .setDescription('The test API description')
-    .setVersion('1.0')
+    .setTitle(appName)
+    .setDescription(appDescription)
+    .setVersion(appVersion)
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     jsonDocumentUrl: 'swagger/json',
   });
 
-  await app.listen(port ?? 3000, '0.0.0.0');
+  await app.listen(appPort, '0.0.0.0');
   console.log(`This application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

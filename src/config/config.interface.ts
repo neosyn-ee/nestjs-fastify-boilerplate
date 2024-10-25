@@ -3,7 +3,9 @@ import { Environment } from './config.enum';
 export interface AppConfig {
   env: Environment;
   port: number;
-  appName: string;
+  name: string;
+  description: string;
+  version: string;
 }
 export interface DatabaseConfig {
   host: string;

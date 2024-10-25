@@ -56,6 +56,16 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   DATABASE_URL: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_DESCRIPTION: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_VERSION: string;
 }
 
 export function validateConfig(configuration: Record<string, unknown>) {

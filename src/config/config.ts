@@ -9,7 +9,9 @@ const APPConfig = registerAs(
       Environment[process.env.NODE_ENV as keyof typeof Environment] ||
       'development',
     port: Number(process.env.APP_PORT),
-    appName: process.env.APP_NAME || 'Nestjs fastify boilerplate',
+    name: process.env.APP_NAME || 'Nestjs fastify boilerplate',
+    description: process.env.APP_DESCRIPTION || 'Nestjs fastify boilerplate',
+    version: process.env.APP_VERSION || '1.0',
   }),
 );
 
