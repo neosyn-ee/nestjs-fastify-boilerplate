@@ -1,3 +1,6 @@
+import { Inject } from '@nestjs/common';
+import { LoggerService } from 'src/logger/logger.service';
+
 type Operation =
   | 'findFirst'
   | 'findUnique'
@@ -15,48 +18,59 @@ abstract class BaseAbstractRepository<
   Args extends { [K in Operation]: unknown },
   Return extends { [K in Operation]: unknown },
 > {
-  constructor(protected db: Db) {}
+  constructor(
+    protected db: Db,
+    @Inject(LoggerService)
+    protected logger: LoggerService = new LoggerService(),
+  ) {}
 
-  //TODO: add private handleException with extension-methods
+  private handleException<T>(operation: () => T): T | null {
+    try {
+      return operation();
+    } catch (error) {
+      this.logger.error(error);
+      return null;
+    }
+  }
 
   findFirst(data?: Args['findFirst']): Return['findFirst'] {
-    return this.db.findFirst(data);
+    return this.handleException(() => this.db.findFirst(data));
   }
 
   findUnique(data: Args['findUnique']): Return['findUnique'] {
-    return this.db.findUnique(data);
+    return this.handleException(() => this.db.findUnique(data));
   }
 
   findMany(data?: Args['findMany']): Return['findMany'] {
-    return this.db.findMany(data);
+    return this.handleException(() => this.db.findMany(data));
   }
 
   create(data: Args['create']): Return['create'] {
-    return this.db.create(data);
+    return this.handleException(() => this.db.create(data));
   }
 
   createMany(data: Args['createMany']): Return['createMany'] {
-    return this.db.createMany(data);
+    return this.handleException(() => this.db.createMany(data));
   }
 
   update(data: Args['update']): Return['update'] {
-    return this.db.update(data);
+    return this.handleException(() => this.db.update(data));
   }
 
   updateMany(data: Args['updateMany']): Return['updateMany'] {
-    return this.db.updateMany(data);
+    return this.handleException(() => this.db.updateMany(data));
   }
 
   delete(data: Args['delete']): Return['delete'] {
-    return this.db.delete(data);
+    return this.handleException(() => this.db.delete(data));
   }
 
   deleteMany(data?: Args['deleteMany']): Return['deleteMany'] {
-    return this.db.deleteMany(data);
+    return this.handleException(() => this.db.deleteMany(data));
   }
 
   count(data?: Args['count']): Return['count'] {
-    return this.db.count(data);
+    return this.handleException(() => this.db.count(data));
   }
 }
 
