@@ -62,6 +62,11 @@ export class UserRepository extends BaseAbstractRepository<
     });
   }
 
+  /** Method to retrieve all users */
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
+  }
+
   /** Method to count the total number of users */
   async countUsers(): Promise<number> {
     return this.prisma.user.count();

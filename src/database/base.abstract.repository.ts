@@ -17,6 +17,8 @@ abstract class BaseAbstractRepository<
 > {
   constructor(protected db: Db) {}
 
+  //TODO: add private handleException with extension-methods
+
   findFirst(data?: Args['findFirst']): Return['findFirst'] {
     return this.db.findFirst(data);
   }
