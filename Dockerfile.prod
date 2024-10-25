@@ -14,7 +14,7 @@ COPY --chown=node:node . .
 
 RUN yarn build-prod
 
-EXPOSE 3000
+EXPOSE 3002
 
 CMD [ "yarn", "start:prod" ]
 

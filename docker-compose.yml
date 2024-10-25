@@ -15,7 +15,7 @@ services:
       context: ./
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       - ./:/app
       - /app/node_modules
@@ -43,5 +43,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
 volumes:
   db_data:
+  pgadmin-data:

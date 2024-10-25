@@ -10,7 +10,7 @@ import { TypedConfigService } from './config/typed-config.service';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: false }),
   );
 
   const configService = app.get(TypedConfigService);
@@ -30,6 +30,5 @@ async function bootstrap() {
   });
 
   await app.listen(appPort, '0.0.0.0');
-  console.log(`This application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
