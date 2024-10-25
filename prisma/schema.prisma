@@ -6,7 +6,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+enum Role {
+  ADMIN
+  USER
+}
 model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -29,6 +32,7 @@ model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   name    String?
+  role    Role     @default(USER)
   posts   Post[]
   profile Profile?
 }

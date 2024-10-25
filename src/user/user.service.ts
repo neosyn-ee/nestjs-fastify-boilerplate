@@ -10,15 +10,17 @@ export class UserService {
     const { email, name } = params;
 
     const user = await this.repository.create({
-      email,
-      name,
+      data: {
+        email,
+        name,
+      },
     });
 
     return user;
   }
 
-  async getUsers() {
-    const users = await this.repository.findAll();
+  async getUser(id: number) {
+    const users = await this.repository.findUserById(id);
     return users;
   }
 }

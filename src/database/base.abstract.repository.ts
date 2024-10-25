@@ -1,21 +1,61 @@
-import { type PrismaClient } from '@prisma/client';
-import * as runtime from '@prisma/client/runtime/library.js';
-import { IBaseRepository } from './base.interface.repository';
+type Operation =
+  | 'findFirst'
+  | 'findUnique'
+  | 'findMany'
+  | 'create'
+  | 'createMany'
+  | 'update'
+  | 'updateMany'
+  | 'delete'
+  | 'deleteMany'
+  | 'count';
 
-export abstract class BaseAbstractRepository<
-  T extends runtime.Types.Result.DefaultSelection<runtime.OperationPayload>,
-  U,
-> implements IBaseRepository<T, U>
-{
-  protected constructor(protected readonly prisma: PrismaClient) {}
+abstract class BaseAbstractRepository<
+  Db extends { [Key in Operation]: (data: any) => unknown },
+  Args extends { [K in Operation]: unknown },
+  Return extends { [K in Operation]: unknown },
+> {
+  constructor(protected db: Db) {}
 
-  abstract findUnique(id: number): Promise<T | null>;
+  findFirst(data?: Args['findFirst']): Return['findFirst'] {
+    return this.db.findFirst(data);
+  }
 
-  abstract findAll(): Promise<T[]>;
+  findUnique(data: Args['findUnique']): Return['findUnique'] {
+    return this.db.findUnique(data);
+  }
 
-  abstract create(data: U): Promise<U>;
+  findMany(data?: Args['findMany']): Return['findMany'] {
+    return this.db.findMany(data);
+  }
 
-  abstract update(id: number, data: Partial<T>): Promise<T>;
+  create(data: Args['create']): Return['create'] {
+    return this.db.create(data);
+  }
 
-  abstract delete(id: number): Promise<T | null>;
+  createMany(data: Args['createMany']): Return['createMany'] {
+    return this.db.createMany(data);
+  }
+
+  update(data: Args['update']): Return['update'] {
+    return this.db.update(data);
+  }
+
+  updateMany(data: Args['updateMany']): Return['updateMany'] {
+    return this.db.updateMany(data);
+  }
+
+  delete(data: Args['delete']): Return['delete'] {
+    return this.db.delete(data);
+  }
+
+  deleteMany(data?: Args['deleteMany']): Return['deleteMany'] {
+    return this.db.deleteMany(data);
+  }
+
+  count(data?: Args['count']): Return['count'] {
+    return this.db.count(data);
+  }
 }
+
+export default BaseAbstractRepository;

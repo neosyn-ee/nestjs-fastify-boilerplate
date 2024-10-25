@@ -1,13 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('User')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('user')
-  async getUser(): Promise<User[]> {
-    return this.userService.getUsers();
+  @Get(':id')
+  @ApiOperation({ summary: 'Retrieve a user by ID' }) // Summary for Swagger
+  @ApiParam({ name: 'id', required: true, description: 'The ID of the user' }) // Document the 'id' parameter
+  @ApiResponse({
+    status: 200,
+    description: 'User retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  async getUser(@Param('id') id: number): Promise<User | null> {
+    return this.userService.getUser(id);
   }
 }
