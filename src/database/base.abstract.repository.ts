@@ -1,4 +1,3 @@
-import { Inject } from '@nestjs/common';
 import { LoggerService } from 'src/logger/logger.service';
 
 type Operation =
@@ -20,8 +19,7 @@ abstract class BaseAbstractRepository<
 > {
   constructor(
     protected db: Db,
-    @Inject(LoggerService)
-    protected logger: LoggerService = new LoggerService(),
+    protected logger: LoggerService,
   ) {}
 
   private handleException<T>(operation: () => T): T | null {

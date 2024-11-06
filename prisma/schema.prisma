@@ -32,6 +32,7 @@ model User {
   role    Role     @default(USER)
   posts   Post[]
   profile Profile?
+  password String?
 }
 
 model Tenant {

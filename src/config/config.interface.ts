@@ -6,6 +6,9 @@ export interface AppConfig {
   name: string;
   description: string;
   version: string;
+  host: string;
+  jwt: string;
+  jwtExpiresIn: string;
 }
 export interface DatabaseConfig {
   databaseUrl: string;

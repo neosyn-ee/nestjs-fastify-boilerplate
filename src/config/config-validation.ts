@@ -40,6 +40,21 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   APP_VERSION: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_HOST: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_JWT: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_JWT_EXPIRES_IN: string;
 }
 
 export function validateConfig(configuration: Record<string, unknown>) {

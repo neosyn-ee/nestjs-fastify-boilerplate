@@ -8,9 +8,17 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
@@ -23,16 +31,14 @@ export class UserController {
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a user by ID' }) // Summary for Swagger
   @ApiParam({ name: 'id', required: true, description: 'The ID of the user' }) // Document the 'id' parameter
-  @ApiResponse({
-    status: 200,
-    description: 'User retrieved successfully.',
-  })
   @ApiResponse({ status: 404, description: 'User not found.' })
   async getUser(@Param('id') id: string): Promise<User | null> {
     return this.userService.getUser(Number(id));
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Retrieve all users' })
   @ApiResponse({ status: 200, description: 'List of all users.' })
   async getAllUsers(): Promise<User[]> {
@@ -47,6 +53,8 @@ export class UserController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiParam({ name: 'id', required: true, description: 'The ID of the user' })
   @ApiResponse({ status: 200, description: 'User updated successfully.' })
@@ -59,6 +67,8 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiParam({ name: 'id', required: true, description: 'The ID of the user' })
   @ApiResponse({ status: 204, description: 'User deleted successfully.' })

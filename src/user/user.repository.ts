@@ -7,6 +7,7 @@ import {
   DelegateArgs,
   DelegateReturnTypes,
 } from 'src/database/base.type.repository';
+import { LoggerService } from 'src/logger/logger.service';
 
 type UserDelegate = Prisma.UserDelegate;
 
@@ -19,8 +20,9 @@ export class UserRepository extends BaseAbstractRepository<
   constructor(
     protected readonly prisma: PrismaClient,
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly logger: LoggerService,
   ) {
-    super(prisma.user);
+    super(prisma.user, logger);
   }
 
   /** Custom method to find users with a specific role */
@@ -59,6 +61,13 @@ export class UserRepository extends BaseAbstractRepository<
   async findUserById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
+    });
+  }
+
+  /** Method to find a unique user by email */
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
     });
   }
 

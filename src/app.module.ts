@@ -11,11 +11,11 @@ import { LoggerService } from './logger/logger.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './logger/logging.interceptor';
 import { MetricsModule } from './metrics/metrics.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigsModule,
-    MetricsModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
@@ -32,7 +32,9 @@ import { MetricsModule } from './metrics/metrics.module';
       global: true,
       middleware: { mount: true },
     }),
+    AuthModule,
     UserModule,
+    MetricsModule,
   ],
   providers: [
     DatabaseService,
