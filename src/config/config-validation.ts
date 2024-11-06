@@ -55,6 +55,16 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   APP_JWT_EXPIRES_IN: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_JWT_REFRESH_TOKEN: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  APP_JWT_REFRESH_TOKEN_EXPIRES_IN: string;
 }
 
 export function validateConfig(configuration: Record<string, unknown>) {

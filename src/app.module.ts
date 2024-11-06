@@ -1,17 +1,19 @@
-import { Module } from '@nestjs/common';
-import { ConfigsModule } from './config/config.module';
-import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { UserModule } from './user/user.module';
+import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ClsModule } from 'nestjs-cls';
+import { AuthModule } from './auth/auth.module';
+import { ConfigsModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { DatabaseService } from './database/database.service';
-import { UserService } from './user/user.service';
+import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
 import { LoggerService } from './logger/logger.service';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './logger/logging.interceptor';
 import { MetricsModule } from './metrics/metrics.module';
-import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { UserService } from './user/user.service';
+import { JwtTokenModule } from './infrastructure/services/jwt/jwtToken.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
     UserModule,
     MetricsModule,
+    BcryptModule,
+    JwtTokenModule,
   ],
   providers: [
     DatabaseService,

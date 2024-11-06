@@ -43,6 +43,17 @@ export class UserRepository extends BaseAbstractRepository<
     });
   }
 
+  /** Method to update a user by email */
+  async updateUserByEmail(
+    email: string,
+    data: Prisma.UserUpdateInput,
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: { email },
+      data,
+    });
+  }
+
   /** Method to delete a user by ID */
   async deleteUserById(id: number): Promise<User> {
     return this.prisma.user.delete({

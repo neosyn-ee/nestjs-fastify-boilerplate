@@ -1,8 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthResponseDto, LoginDto } from './dto/login.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { FastifyReply } from 'fastify';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -20,7 +21,19 @@ export class AuthController {
     type: AuthResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  login(@Body() { email, password }: LoginDto) {
+  async login(
+    @Body() { email, password }: LoginDto,
+    @Res({ passthrough: true }) response: FastifyReply,
+  ) {
+    const { accessToken } = await this.authService.login(email, password);
+    response
+      .cookie('access_token', accessToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+      })
+      .send({ status: 'ok' });
     return this.authService.login(email, password);
   }
 

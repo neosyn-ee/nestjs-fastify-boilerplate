@@ -33,6 +33,7 @@ model User {
   posts   Post[]
   profile Profile?
   password String?
+  hashRefreshToken String?
 }
 
 model Tenant {

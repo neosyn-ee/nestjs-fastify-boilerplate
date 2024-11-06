@@ -9,6 +9,8 @@ export interface AppConfig {
   host: string;
   jwt: string;
   jwtExpiresIn: string;
+  jwtRefreshToken: string;
+  jwtRefreshTokenExpiresIn: string;
 }
 export interface DatabaseConfig {
   databaseUrl: string;

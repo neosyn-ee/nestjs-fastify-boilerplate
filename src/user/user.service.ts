@@ -75,4 +75,10 @@ export class UserService {
   async deleteUser(id: number): Promise<void> {
     await this.repository.deleteUserById(id);
   }
+
+  async updateRefreshToken(email: string, hashRefreshToken: string) {
+    await this.repository.updateUserByEmail(email, {
+      hashRefreshToken,
+    });
+  }
 }

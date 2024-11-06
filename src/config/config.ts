@@ -15,6 +15,9 @@ const APPConfig = registerAs(
     host: process.env.APP_URL || 'localhost',
     jwt: process.env.APP_JWT || '',
     jwtExpiresIn: process.env.APP_JWT_EXPIRES_IN || '60s',
+    jwtRefreshToken: process.env.APP_JWT_REFRESH_TOKEN || '',
+    jwtRefreshTokenExpiresIn:
+      process.env.APP_JWT_REFRESH_TOKEN_EXPIRES_IN || '60s',
   }),
 );
 

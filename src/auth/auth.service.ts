@@ -3,17 +3,79 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { TypedConfigService } from 'src/config/typed-config.service';
+import { BcryptService } from 'src/infrastructure/services/bcrypt/bcrypt.service';
+import { IJwtServicePayload } from 'src/infrastructure/services/jwt/jwt.interface';
+import { JwtTokenService } from 'src/infrastructure/services/jwt/JwtToken.service';
+import { LoggerService } from 'src/logger/logger.service';
+import { UserService } from 'src/user/user.service';
 import { AuthResponseDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private jwtService: JwtService,
+    private readonly bcryptService: BcryptService,
+    private readonly logger: LoggerService,
+    private readonly jwtTokenService: JwtTokenService,
+    private readonly configService: TypedConfigService,
   ) {}
+
+  async validateUserForJWTStragtegy(email: string) {
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, email: string) {
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+    if (!user.hashRefreshToken) {
+      this.logger.warn('User refresh token is missing or undefined');
+      throw new UnauthorizedException('Refresh token is missing');
+    }
+
+    const isRefreshTokenMatching = await this.bcryptService.compare(
+      refreshToken,
+      user.hashRefreshToken,
+    );
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+
+    return null;
+  }
+
+  async getCookieWithJwtToken(email: string) {
+    this.logger.info(`The user ${email} have been logged.`);
+    const payload: IJwtServicePayload = { email };
+    const secret = this.configService.get('APP.jwt');
+    const expiresIn = this.configService.get('APP.jwtExpiresIn');
+    const token = this.jwtTokenService.createToken(payload, secret, expiresIn);
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${expiresIn}`;
+  }
+
+  async getCookieWithJwtRefreshToken(email: string) {
+    this.logger.info(`The user ${email} have been logged.`);
+    const payload: IJwtServicePayload = { email };
+    const secret = this.configService.get('APP.jwtRefreshToken');
+    const expiresIn = this.configService.get('APP.jwtRefreshTokenExpiresIn');
+    const token = this.jwtTokenService.createToken(payload, secret, expiresIn);
+    await this.setCurrentRefreshToken(token, email);
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${expiresIn}`;
+    return cookie;
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, email: string) {
+    const currentHashedRefreshToken =
+      await this.bcryptService.hash(refreshToken);
+    await this.userService.updateRefreshToken(email, currentHashedRefreshToken);
+  }
 
   async login(email: string, password: string): Promise<AuthResponseDto> {
     // Step 1: Fetch a user with the given email
@@ -35,18 +97,29 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    // Step 3: Generate a JWT containing the user's ID and return it
-    return {
-      accessToken: this.jwtService.sign({ userId: user.id }),
-    };
+    // Step 3: Generate a JWT containing the user's email
+    const accessToken = await this.getCookieWithJwtToken(user.email);
+    const refreshToken = await this.getCookieWithJwtRefreshToken(user.email);
+
+    // Step 4: Return the access token and refresh token in the response
+    return { accessToken, refreshToken };
   }
 
   async signIn(email: string, password: string): Promise<AuthResponseDto> {
+    // Check if user already exists
+    const existingUser = await this.userService.getUserByEmail(email);
+    if (existingUser) {
+      throw new UnauthorizedException('User already exists');
+    }
+
+    // Step 1: Create a new user
     const newUser = await this.userService.createUser({ email, password });
 
-    const payload = { userId: newUser.id, email: newUser.email };
-    const accessToken = this.jwtService.sign(payload);
+    // Step 2: Generate JWT tokens for the new user
+    const accessToken = await this.getCookieWithJwtToken(newUser.email);
+    const refreshToken = await this.getCookieWithJwtRefreshToken(newUser.email);
 
-    return { accessToken };
+    // Step 3: Return the response with tokens
+    return { accessToken, refreshToken };
   }
 }
