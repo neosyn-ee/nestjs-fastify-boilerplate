@@ -6,12 +6,23 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { TypedConfigService } from './config/typed-config.service';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false }),
   );
+  const microservice = app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: 'localhost', // Cambia con l'host desiderato
+      port: 3002, // Porta per il microservizio
+    },
+  });
+
+  //FIXME: remove this line (issue: @typescript-eslint/no-unused-vars)
+  console.log(microservice);
 
   const configService = app.get(TypedConfigService);
   const appPort = configService.get('APP.port');
