@@ -7,13 +7,13 @@ import { UserService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypedConfigService } from 'src/config/typed-config.service';
-import { BcryptService } from 'src/infrastructure/services/bcrypt/bcrypt.service';
-import { JwtTokenService } from 'src/infrastructure/services/jwt/jwtToken.service';
+import { BcryptService } from 'src/bcrypt/bcrypt.service';
+import { JwtTokenService } from 'src/jwt/jwtToken.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
-import { LocalStrategy } from './local.strategy';
-import { JwtRefreshTokenStrategy } from './jwtRefresh.strategy';
+import { JwtRefreshTokenStrategy } from 'src/jwt/guard/jwtRefresh.strategy';
+import { JwtStrategy } from 'src/jwt/guard/jwt.strategy';
+import { CookieService } from 'src/cookie/cookie.service';
 
 @Module({
   imports: [
@@ -39,9 +39,9 @@ import { JwtRefreshTokenStrategy } from './jwtRefresh.strategy';
     JwtTokenService,
     LoggerService,
     JwtService,
-    LocalStrategy,
     JwtStrategy,
     JwtRefreshTokenStrategy,
+    CookieService,
   ],
 })
 export class AuthModule {}

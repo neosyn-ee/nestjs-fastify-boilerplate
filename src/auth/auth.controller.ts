@@ -1,4 +1,13 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiCookieAuth,
@@ -6,22 +15,25 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { CookieNames } from './cookie-names.enum';
-import {
-  AuthRefreshTokenDto,
-  AuthResponseDto,
-  LoginDto,
-} from './dto/login.dto';
-import { JwtGuard } from './jwtAuth.guard';
-import JwtRefreshGuard from './jwtRefresh.guard';
+import { AuthResponseDto, LoginDto } from './dto/login.dto';
+import { IsAuthPresenter } from './auth.presenter';
+import { IsAuthenticatedQueryDto } from './dto/is-authenticated-query.dto';
+import { CookieService } from 'src/cookie/cookie.service';
+import { JwtGuard } from 'src/jwt/guard/jwtAuth.guard';
+import JwtRefreshGuard from 'src/jwt/guard/jwtRefresh.guard';
+import { CookieNames } from 'src/cookie/cookie-names.enum';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly cookieService: CookieService,
+  ) {}
 
   @Post('login')
   @ApiOperation({
@@ -44,21 +56,8 @@ export class AuthController {
       password,
     );
 
-    reply.setCookie(CookieNames.AccessToken, accessToken, {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-      path: '/',
-      sameSite: 'lax',
-    });
-
-    reply.setCookie(CookieNames.RefreshToken, refreshToken, {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-      path: '/',
-      sameSite: 'lax',
-    });
+    this.cookieService.setCookie(reply, CookieNames.AccessToken, accessToken);
+    this.cookieService.setCookie(reply, CookieNames.RefreshToken, refreshToken);
 
     reply.send({ accessToken, refreshToken });
   }
@@ -96,21 +95,8 @@ export class AuthController {
       password,
     );
 
-    reply.setCookie(CookieNames.AccessToken, accessToken, {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-      path: '/',
-      sameSite: 'lax',
-    });
-
-    reply.setCookie(CookieNames.RefreshToken, refreshToken, {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-      path: '/',
-      sameSite: 'lax',
-    });
+    this.cookieService.setCookie(reply, CookieNames.AccessToken, accessToken);
+    this.cookieService.setCookie(reply, CookieNames.RefreshToken, refreshToken);
 
     reply.send({ accessToken, refreshToken });
   }
@@ -123,20 +109,34 @@ export class AuthController {
   })
   @UseGuards(JwtRefreshGuard)
   async refresh(
-    @Body() { email }: AuthRefreshTokenDto,
+    @Body() { email }: RefreshTokenDto,
     @Res({ passthrough: true }) reply: FastifyReply,
   ) {
-    const accessTokenCookie =
-      await this.authService.createAccessJwtToken(email);
+    const { accessToken, refreshToken } =
+      await this.authService.generateAuthCookies(email);
+    this.cookieService.setCookie(reply, CookieNames.AccessToken, accessToken);
+    this.cookieService.setCookie(reply, CookieNames.RefreshToken, refreshToken);
 
-    reply.setCookie('access_token', accessTokenCookie, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 3600 * 24,
-    });
     reply.send({ message: 'Refresh successful' });
+  }
+
+  @Get('is_authenticated')
+  @ApiCookieAuth()
+  @UseGuards(JwtGuard)
+  @ApiOperation({ description: 'is_authenticated' })
+  async isAuthenticated(
+    @Req()
+    request: FastifyRequest<{
+      Querystring: { queryObj: IsAuthenticatedQueryDto };
+    }>,
+  ) {
+    const user = await this.authService.execute(request.query.queryObj.email);
+    if (!user) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+    const response = new IsAuthPresenter();
+    response.email = user.email;
+    return response;
   }
 
   @Post('logout')

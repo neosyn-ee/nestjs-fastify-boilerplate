@@ -12,8 +12,9 @@ import { LoggingInterceptor } from './logger/logging.interceptor';
 import { MetricsModule } from './metrics/metrics.module';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
-import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
-import { JwtTokenModule } from './infrastructure/services/jwt/jwtToken.module';
+import { BcryptModule } from './bcrypt/bcrypt.module';
+import { JwtTokenModule } from './jwt/jwtToken.module';
+import { CookieModule } from './cookie/cookie.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { JwtTokenModule } from './infrastructure/services/jwt/jwtToken.module';
     MetricsModule,
     BcryptModule,
     JwtTokenModule,
+    CookieModule,
   ],
   providers: [
     DatabaseService,

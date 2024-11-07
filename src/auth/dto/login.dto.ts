@@ -28,14 +28,3 @@ export class AuthResponseDto {
   @ApiProperty()
   refreshToken: string;
 }
-
-export class AuthRefreshTokenDto {
-  @ApiProperty({
-    example: 'john.doe@example.com',
-    description: 'User email address',
-  })
-  @IsEmail()
-  @IsNotEmpty()
-  @ApiProperty()
-  email: string;
-}

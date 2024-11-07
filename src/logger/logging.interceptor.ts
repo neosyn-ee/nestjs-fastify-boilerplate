@@ -10,10 +10,14 @@ import { tap, catchError } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
 import { v4 as uuidv4 } from 'uuid';
+import { TypedConfigService } from 'src/config/typed-config.service';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  constructor(private readonly loggerService: LoggerService) {}
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly configService: TypedConfigService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
@@ -22,10 +26,10 @@ export class LoggingInterceptor implements NestInterceptor {
     const correlationId = uuidv4();
     request.correlationId = correlationId;
 
-    // Log the incoming request
-    //FIXME: replace {microserviceName} with env var
+    const MICROSERVICE_NAME = this.configService.get('APP.name');
+
     this.loggerService.info(
-      `{microserviceName} Incoming request: ${method} ${url} ${correlationId}`,
+      `${MICROSERVICE_NAME} Incoming request: ${method} ${url} ${correlationId}`,
       {
         request: {
           body,
@@ -42,7 +46,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
         // Log the response details
         this.loggerService.info(
-          `{microserviceName} Response sent: ${method} ${url} ${correlationId} ${response.statusCode}`,
+          `${MICROSERVICE_NAME} Response sent: ${method} ${url} ${correlationId} ${response.statusCode}`,
           {
             response: {
               body: responseBody,
@@ -58,7 +62,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
         // Log the error response details
         this.loggerService.error(
-          `{microserviceName} Error occurred: ${method} ${url} ${correlationId} ${statusCode}`,
+          `${MICROSERVICE_NAME} Error occurred: ${method} ${url} ${correlationId} ${statusCode}`,
           JSON.stringify({
             response: {
               message: error.message,

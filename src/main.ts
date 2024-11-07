@@ -8,6 +8,7 @@ import {
 import { TypedConfigService } from './config/typed-config.service';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import fastifyCookie from '@fastify/cookie';
+import { CookieNames } from './cookie/cookie-names.enum';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -41,7 +42,7 @@ async function bootstrap() {
     .setTitle(appName)
     .setDescription(appDescription)
     .setVersion(appVersion)
-    .addCookieAuth('access_token')
+    .addCookieAuth(CookieNames.AccessToken)
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {

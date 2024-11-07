@@ -18,10 +18,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { JwtGuard } from 'src/auth/jwtAuth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { JwtGuard } from 'src/jwt/guard/jwtAuth.guard';
 
 @ApiTags('User')
 @Controller('user')

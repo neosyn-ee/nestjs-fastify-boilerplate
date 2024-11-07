@@ -6,10 +6,10 @@ import {
 import { UserService } from 'src/user/user.service';
 import { AuthResponseDto } from './dto/login.dto';
 import { LoggerService } from 'src/logger/logger.service';
-import { BcryptService } from 'src/infrastructure/services/bcrypt/bcrypt.service';
-import { JwtTokenService } from 'src/infrastructure/services/jwt/jwtToken.service';
+import { BcryptService } from 'src/bcrypt/bcrypt.service';
+import { JwtTokenService } from 'src/jwt/jwtToken.service';
 import { TypedConfigService } from 'src/config/typed-config.service';
-import { IJwtServicePayload } from 'src/infrastructure/services/jwt/jwt.interface';
+import { IJwtServicePayload } from 'src/jwt/jwt.interface';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -21,6 +21,16 @@ export class AuthService {
     private readonly jwtTokenService: JwtTokenService,
     private readonly configService: TypedConfigService,
   ) {}
+
+  async execute(email: string): Promise<Omit<User, 'password'> | null> {
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...info } = user;
+    return info;
+  }
 
   private async createJwtToken(
     email: string,
@@ -49,7 +59,7 @@ export class AuthService {
     return refreshToken;
   }
 
-  private async generateAuthCookies(
+  async generateAuthCookies(
     email: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = await this.createAccessJwtToken(email);
@@ -72,11 +82,9 @@ export class AuthService {
       this.logger.warn(`Refresh token missing or invalid for user ${email}`);
       throw new UnauthorizedException('Invalid refresh token');
     }
+    const isTokenMatching =
+      await this.jwtTokenService.verifyRefreshToken(refreshToken);
 
-    const isTokenMatching = await this.bcryptService.compare(
-      refreshToken,
-      user.hashRefreshToken,
-    );
     return isTokenMatching ? user : null;
   }
 

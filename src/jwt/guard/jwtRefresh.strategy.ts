@@ -5,8 +5,8 @@ import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TypedConfigService } from 'src/config/typed-config.service';
 import { LoggerService } from 'src/logger/logger.service';
-import { AuthService } from './auth.service';
-import { CookieNames } from './cookie-names.enum';
+import { CookieNames } from 'src/cookie/cookie-names.enum';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(

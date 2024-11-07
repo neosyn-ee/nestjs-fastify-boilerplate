@@ -3,10 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { TypedConfigService } from 'src/config/typed-config.service';
 import { User } from '@prisma/client';
-import { AuthService } from './auth.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { FastifyRequest } from 'fastify';
-import { CookieNames } from './cookie-names.enum';
+import { CookieNames } from 'src/cookie/cookie-names.enum';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,12 +21,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: FastifyRequest) => {
           const accessToken = request.cookies?.[CookieNames.AccessToken];
+          if (accessToken) return accessToken;
 
-          if (!accessToken) {
-            this.logger.warn('Refresh token is missing in the cookies');
-            throw new UnauthorizedException('Refresh token is missing');
+          const authHeader = request.headers.authorization;
+          if (authHeader && authHeader.startsWith('Bearer ')) {
+            return authHeader.split(' ')[1];
           }
-          return accessToken;
+
+          this.logger.warn(
+            'Access token is missing in both cookies and header',
+          );
+          throw new UnauthorizedException('Access token is missing');
         },
       ]),
       secretOrKey: JWT_SECRET,
