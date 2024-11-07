@@ -26,7 +26,8 @@ export class AuthController {
   @Post('login')
   @ApiOperation({
     summary: 'User login',
-    description: 'Allows a user to log in and receive an access token.',
+    description:
+      'Allows a user to log in by providing their credentials (email and password). Upon successful login, the user receives an access token that grants access to protected resources. This access token should be included in the Authorization header of subsequent requests to authenticate the user.',
   })
   @ApiResponse({
     status: 201,
@@ -65,7 +66,8 @@ export class AuthController {
   @Post('signIn')
   @ApiOperation({
     summary: 'User sign in',
-    description: 'Allows a user to sign in and receive an access token.',
+    description:
+      'Allows a user to sign in by providing their credentials (email and password). Upon successful authentication, the user receives an access token and a refresh token. The access token grants access to protected resources, while the refresh token can be used to obtain a new access token without re-authenticating.',
   })
   @ApiBody({
     description: 'User sign in credentials',
@@ -114,6 +116,11 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @ApiOperation({
+    summary: 'User refresh token',
+    description:
+      'Allows a user to use their refresh token to obtain a new access token. The refresh token must be valid and unexpired. This operation helps maintain user sessions without requiring reauthentication, improving the user experience for long-lived sessions.',
+  })
   @UseGuards(JwtRefreshGuard)
   async refresh(
     @Body() { email }: AuthRefreshTokenDto,
@@ -132,8 +139,13 @@ export class AuthController {
     reply.send({ message: 'Refresh successful' });
   }
 
-  @UseGuards(JwtGuard)
   @Post('logout')
+  @ApiOperation({
+    summary: 'User logout',
+    description:
+      'Allows a user to log out by invalidating their session. This operation clears the access and refresh tokens, ensuring the user can no longer access protected resources until they authenticate again. The tokens are removed from the client, preventing unauthorized use.',
+  })
+  @UseGuards(JwtGuard)
   @ApiCookieAuth()
   async logout(@Res() res: FastifyReply) {
     res.clearCookie(CookieNames.AccessToken);
