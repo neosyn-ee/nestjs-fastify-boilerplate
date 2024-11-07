@@ -85,8 +85,32 @@ export class AuthController {
     status: 401,
     description: 'Invalid password or unauthorized access',
   })
-  signIn(@Body() { email, password }: CreateUserDto) {
-    return this.authService.signIn(email, password);
+  async signIn(
+    @Body() { email, password }: CreateUserDto,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.signIn(
+      email,
+      password,
+    );
+
+    reply.setCookie(CookieNames.AccessToken, accessToken, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+      path: '/',
+      sameSite: 'lax',
+    });
+
+    reply.setCookie(CookieNames.RefreshToken, refreshToken, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+      path: '/',
+      sameSite: 'lax',
+    });
+
+    reply.send({ accessToken, refreshToken });
   }
 
   @Post('refresh')
