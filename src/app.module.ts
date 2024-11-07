@@ -7,12 +7,12 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigsModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { DatabaseService } from './database/database.service';
-import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
 import { LoggerService } from './logger/logger.service';
 import { LoggingInterceptor } from './logger/logging.interceptor';
 import { MetricsModule } from './metrics/metrics.module';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
+import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
 import { JwtTokenModule } from './infrastructure/services/jwt/jwtToken.module';
 
 @Module({

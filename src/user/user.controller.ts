@@ -8,9 +8,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
   ApiCookieAuth,
   ApiOperation,
   ApiParam,
@@ -18,12 +18,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { JwtGuard } from 'src/auth/jwtAuth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('User')
-@Controller('User')
+@Controller('user')
+@UseGuards(JwtGuard)
 @ApiCookieAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -37,7 +39,6 @@ export class UserController {
   }
 
   @Get()
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Retrieve all users' })
   @ApiResponse({ status: 200, description: 'List of all users.' })
   async getAllUsers(): Promise<User[]> {
@@ -52,7 +53,6 @@ export class UserController {
   }
 
   @Put(':id')
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiParam({ name: 'id', required: true, description: 'The ID of the user' })
   @ApiResponse({ status: 200, description: 'User updated successfully.' })
@@ -65,7 +65,6 @@ export class UserController {
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiParam({ name: 'id', required: true, description: 'The ID of the user' })
   @ApiResponse({ status: 204, description: 'User deleted successfully.' })

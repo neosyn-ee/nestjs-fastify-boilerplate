@@ -1,10 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { User } from '@prisma/client';
+import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TypedConfigService } from 'src/config/typed-config.service';
 import { LoggerService } from 'src/logger/logger.service';
-import { FastifyReply } from 'fastify';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from './auth.service';
+import { CookieNames } from './cookie-names.enum';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
@@ -13,39 +15,43 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly configService: TypedConfigService,
-    private readonly authService: AuthService,
     private readonly logger: LoggerService,
+    private readonly authService: AuthService,
   ) {
+    const JWT_REFRESH_SECRET = configService.get('APP.jwtRefreshToken');
+
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: FastifyReply) => {
-          if (!request?.cookies?.Refresh) {
-            this.logger.warn(
-              'Refresh token from cookie is missing or undefined',
-            );
+        (request: FastifyRequest) => {
+          const refreshToken = request.cookies?.[CookieNames.RefreshToken];
+
+          if (!refreshToken) {
+            this.logger.warn('Refresh token is missing in the cookies');
             throw new UnauthorizedException('Refresh token is missing');
           }
-          return request.cookies.Refresh;
+          return refreshToken;
         },
       ]),
-      secretOrKey: configService.get('APP.jwtRefreshToken'),
+      secretOrKey: JWT_REFRESH_SECRET,
       passReqToCallback: true,
     });
   }
-  //TODO: add correct type for payload
-  async validate(request: FastifyReply, payload: any) {
-    const refreshToken = request.cookies?.Refresh;
+
+  async validate(request: FastifyRequest, payload: User) {
+    const refreshToken = request.cookies?.[CookieNames.RefreshToken];
     if (!refreshToken) {
-      this.logger.warn('Refresh token is missing or undefined');
+      this.logger.warn('Refresh token is missing in the cookies');
       throw new UnauthorizedException('Refresh token is missing');
     }
     const user = this.authService.getUserIfRefreshTokenMatches(
       refreshToken,
-      payload.username,
+      payload.email,
     );
     if (!user) {
       this.logger.warn(`User not found or hash not correct`);
-      throw new UnauthorizedException('User not found or hash not correct');
+      new UnauthorizedException({
+        message: 'User not found or hash not correct',
+      });
     }
     return user;
   }
