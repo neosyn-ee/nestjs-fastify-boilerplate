@@ -7,6 +7,6 @@ export enum ConfigKey {
 export enum Environment {
   Local = 'local',
   Development = 'development',
-  Uat = 'uat',
+  Preprod = 'preprod',
   Production = 'production',
 }
