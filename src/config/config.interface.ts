@@ -15,3 +15,6 @@ export interface AppConfig {
 export interface DatabaseConfig {
   databaseUrl: string;
 }
+export interface LokiConfig {
+  host: string;
+}

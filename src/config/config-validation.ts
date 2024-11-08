@@ -65,6 +65,11 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   APP_JWT_REFRESH_TOKEN_EXPIRES_IN: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(1)
+  LOKI_HOST: string;
 }
 
 export function validateConfig(configuration: Record<string, unknown>) {

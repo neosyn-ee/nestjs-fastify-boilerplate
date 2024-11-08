@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { AppConfig, DatabaseConfig } from './config.interface';
+import { AppConfig, DatabaseConfig, LokiConfig } from './config.interface';
 import { ConfigKey, Environment } from './config.enum';
 
 const APPConfig = registerAs(
@@ -28,4 +28,11 @@ const DBConfig = registerAs(
   }),
 );
 
-export const configurations = [APPConfig, DBConfig];
+const LokiConfig = registerAs(
+  ConfigKey.Loki,
+  (): LokiConfig => ({
+    host: process.env.LOKI_HOST || '',
+  }),
+);
+
+export const configurations = [APPConfig, DBConfig, LokiConfig];

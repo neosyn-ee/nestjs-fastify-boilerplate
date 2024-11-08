@@ -1,5 +1,5 @@
 import { ConfigKey } from './config.enum';
-import { AppConfig, DatabaseConfig } from './config.interface';
+import { AppConfig, DatabaseConfig, LokiConfig } from './config.interface';
 
 type Join<T extends string[], D extends string> = T extends []
   ? never
@@ -29,7 +29,8 @@ export type DottedPathToValue<
     : never;
 
 export type EnvironmentVariables = Record<ConfigKey.App, AppConfig> &
-  Record<ConfigKey.Db, DatabaseConfig>;
+  Record<ConfigKey.Db, DatabaseConfig> &
+  Record<ConfigKey.Loki, LokiConfig>;
 
 export type DottedLanguageObjectStringPaths = Join<
   PathsToStringProps<EnvironmentVariables>,

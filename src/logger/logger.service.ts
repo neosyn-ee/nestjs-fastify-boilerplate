@@ -65,8 +65,7 @@ export class LoggerService {
     ),
     transports: [
       new LokiTransport({
-        //TODO: fix
-        host: 'http://localhost:3100',
+        host: this.configService.get('LOKI.host'),
         labels: {
           job: this.configService.get('APP.name'),
           service: this.configService.get('APP.name'),
