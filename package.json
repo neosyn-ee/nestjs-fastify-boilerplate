@@ -28,7 +28,8 @@
     "prisma:migrate:uat": "dotenv -e .env.uat -- npx prisma migrate dev --name init",
     "prisma:migrate:prod": "dotenv -e .env.production -- npx prisma migrate dev --name init",
     "prisma:seed:dev": "dotenv -e .env.development -- ts-node prisma/seed.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "swagger:generateTypesMicroservice": "bash ./generatorTypeFormSwagger.sh"
   },
   "dependencies": {
     "@fastify/cookie": "^9.4.0",
@@ -92,6 +93,7 @@
     "prisma": "^5.21.1",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
+    "swagger-typescript-api": "^13.0.22",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
