@@ -13,11 +13,11 @@ COPY yarn.lock ./
 RUN yarn install
 
 # Creates a "dist" folder with the production build
-RUN yarn build
+RUN yarn build-local
 
 # Expose the port on which the app will run
 EXPOSE 3002
 
-COPY start-uat.sh /usr/src/app/
-RUN chmod +x /usr/src/app/start-uat.sh
-CMD ["/usr/src/app/start-uat.sh"]
+COPY start-local.sh /usr/src/app/
+RUN chmod +x /usr/src/app/start-local.sh
+CMD ["/usr/src/app/start-local.sh"]
