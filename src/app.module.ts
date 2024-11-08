@@ -15,6 +15,9 @@ import { UserService } from './user/user.service';
 import { BcryptModule } from './bcrypt/bcrypt.module';
 import { JwtTokenModule } from './jwt/jwtToken.module';
 import { CookieModule } from './cookie/cookie.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
+import { TypedConfigService } from './config/typed-config.service';
 
 @Module({
   imports: [
@@ -41,6 +44,21 @@ import { CookieModule } from './cookie/cookie.module';
     BcryptModule,
     JwtTokenModule,
     CookieModule,
+    ClientsModule.registerAsync([
+      {
+        imports: [ConfigModule],
+        name: 'BOILER_SERVICE',
+        useFactory: async (configService: TypedConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('APP.host'),
+            port: configService.get('APP.port'),
+          },
+        }),
+        inject: [TypedConfigService],
+        extraProviders: [TypedConfigService],
+      },
+    ]),
   ],
   providers: [
     DatabaseService,
