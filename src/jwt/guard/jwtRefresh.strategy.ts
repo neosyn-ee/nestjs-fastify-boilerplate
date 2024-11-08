@@ -23,13 +23,22 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: FastifyRequest) => {
-          const refreshToken = request.cookies?.[CookieNames.RefreshToken];
-
-          if (!refreshToken) {
-            this.logger.warn('Refresh token is missing in the cookies');
-            throw new UnauthorizedException('Refresh token is missing');
+          const refreshTokenFromCookie =
+            request.cookies?.[CookieNames.RefreshToken];
+          if (refreshTokenFromCookie) {
+            return refreshTokenFromCookie;
           }
-          return refreshToken;
+
+          const refreshTokenFromHeader =
+            ExtractJwt.fromAuthHeaderAsBearerToken()(request as any);
+          if (refreshTokenFromHeader) {
+            return refreshTokenFromHeader;
+          }
+
+          this.logger.warn(
+            'Refresh token is missing in both cookies and headers',
+          );
+          throw new UnauthorizedException('Refresh token is missing');
         },
       ]),
       secretOrKey: JWT_REFRESH_SECRET,
@@ -38,21 +47,27 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   }
 
   async validate(request: FastifyRequest, payload: User) {
-    const refreshToken = request.cookies?.[CookieNames.RefreshToken];
+    const refreshToken =
+      request.cookies?.[CookieNames.RefreshToken] ||
+      ExtractJwt.fromAuthHeaderAsBearerToken()(request as any);
+
     if (!refreshToken) {
-      this.logger.warn('Refresh token is missing in the cookies');
+      this.logger.warn('Refresh token is missing in both cookies and headers');
       throw new UnauthorizedException('Refresh token is missing');
     }
-    const user = this.authService.getUserIfRefreshTokenMatches(
+
+    const user = await this.authService.getUserIfRefreshTokenMatches(
       refreshToken,
       payload.email,
     );
+
     if (!user) {
       this.logger.warn(`User not found or hash not correct`);
-      new UnauthorizedException({
+      throw new UnauthorizedException({
         message: 'User not found or hash not correct',
       });
     }
+
     return user;
   }
 }

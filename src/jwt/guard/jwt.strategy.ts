@@ -20,16 +20,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: FastifyRequest) => {
-          const accessToken = request.cookies?.[CookieNames.AccessToken];
-          if (accessToken) return accessToken;
+          // Check for the access token in cookies
+          const accessTokenFromCookie =
+            request.cookies?.[CookieNames.AccessToken];
+          if (accessTokenFromCookie) return accessTokenFromCookie;
 
-          const authHeader = request.headers.authorization;
-          if (authHeader && authHeader.startsWith('Bearer ')) {
-            return authHeader.split(' ')[1];
-          }
+          // Use the passport-jwt's built-in extractor for the Bearer token in the Authorization header
+          const accessTokenFromHeader =
+            ExtractJwt.fromAuthHeaderAsBearerToken()(request as any);
+          if (accessTokenFromHeader) return accessTokenFromHeader;
 
+          // Log warning and throw exception if token is missing
           this.logger.warn(
-            'Access token is missing in both cookies and header',
+            'Access token is missing in both cookies and headers',
           );
           throw new UnauthorizedException('Access token is missing');
         },
