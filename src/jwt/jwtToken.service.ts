@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtService, IJwtServicePayload } from './jwt.interface';
+import { IJwtService } from './jwt.interface';
 import { TypedConfigService } from 'src/config/typed-config.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { ErrorCodes } from 'src/errors/error-codes.enum';
@@ -36,8 +36,8 @@ export class JwtTokenService implements IJwtService {
     }
   }
 
-  createToken(
-    payload: IJwtServicePayload,
+  createToken<T extends object>(
+    payload: T,
     secret: string,
     expiresIn: string,
   ): string {

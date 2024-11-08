@@ -39,7 +39,7 @@ export class AuthService {
     secretKey: string,
     expiresIn: string,
   ): Promise<string> {
-    const payload: IJwtServicePayload = { email };
+    const payload: Partial<IJwtServicePayload> = { email };
     return this.jwtTokenService.createToken(payload, secretKey, expiresIn);
   }
 
