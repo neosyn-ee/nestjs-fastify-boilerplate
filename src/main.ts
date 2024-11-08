@@ -18,6 +18,7 @@ async function bootstrap() {
 
   const configService = app.get(TypedConfigService);
   const appPort = configService.get('APP.port');
+  const appHost = configService.get('APP.host');
   const appName = configService.get('APP.name');
   const appVersion = configService.get('APP.version');
   const appDescription = configService.get('APP.description');
@@ -30,8 +31,8 @@ async function bootstrap() {
   const microservice = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
-      host: 'localhost', // Cambia con l'host desiderato
-      port: 3002, // Porta per il microservizio
+      host: appHost,
+      port: appPort,
     },
   });
 
