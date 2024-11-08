@@ -316,11 +316,11 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title NestJS-Application
+ * @title TicketManagement-authorization
  * @version 1.0
  * @contact
  *
- * Boilerplate base for future projects
+ * Handles user authentication, including login, registration, and token management. It generates JWT Access Tokens and Refresh Tokens, storing them securely in HTTP-only cookies. Supports token refresh and session management, ensuring secure access to the application.
  */
 export class Api<
   SecurityDataType extends unknown,

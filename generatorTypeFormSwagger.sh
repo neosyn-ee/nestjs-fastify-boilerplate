@@ -29,11 +29,11 @@ for SWAGGER_URL in "${SWAGGER_URLS[@]}"; do
         if [ -z "$SERVICE_NAME" ]; then
             echo "Unable to extract the title from the Swagger file for $SWAGGER_URL. Using fallback name."
 
-            # Extract the domain from the URL (without the protocol http:// or https://)
-            DOMAIN=$(echo "$SWAGGER_URL" | sed -E 's|https?://([^/]+).*|\1|')
+            # Extract the host from the URL (without the protocol http:// or https:// and without the port)
+            DOMAIN=$(echo "$SWAGGER_URL" | sed -E 's|https?://([^:/]+).*|\1|')
 
-            # Use the domain (or part of it) as the service name
-            SERVICE_NAME="microservice_${DOMAIN//./_}"
+            # Use the domain (without the port) as the service name
+            SERVICE_NAME="${DOMAIN}"
         fi
 
         # Create a specific folder for each service if it doesn't exist already
