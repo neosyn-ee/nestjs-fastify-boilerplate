@@ -1,0 +1,88 @@
+name: Deploy NestJS Microservice to AWS ECS
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: 'yarn'
+
+      - name: Run Yarn Install
+        run: |
+          npm i -g corepack
+          yarn install
+
+      - name: Run build
+        run: yarn build-prod
+
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifact-prod
+          path: dist/
+          retention-days: 3
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.DAVIDECARETOKEN }}
+        run: npx semantic-release
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'eu-central-1'
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'true'
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          REPOSITORY: neosyn/boilerplate-nestjs
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG -f Dockerfile.dev .
+          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT    
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json 
+          container-name: ProdBoilerplateNestjs
+          image: ${{ steps.build-image.outputs.image }} 
+
+      - name: Amazon ECS "Deploy Task Definition" Action for GitHub Actions
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ProdBoilerplateNestjs
+          cluster: ProdBoilerplateNestjs
+          wait-for-service-stability: true
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}

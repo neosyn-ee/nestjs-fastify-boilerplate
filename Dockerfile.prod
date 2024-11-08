@@ -1,0 +1,32 @@
+FROM --platform=linux/amd64 node:18.19.0-slim  AS build_amd64
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --chown=node:node package.json yarn.lock ./
+
+RUN yarn install --frozen-lockfile --production
+
+RUN yarn add @nestjs/cli
+
+COPY --chown=node:node . .
+
+RUN yarn build-prod
+
+EXPOSE 3002
+
+CMD [ "yarn", "start:prod" ]
+
+FROM --platform=linux/amd64 node:18.19.0-slim AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --chown=node:node --from=build_amd64 /app/dist ./dist
+COPY --chown=node:node --from=build_amd64 /app/node_modules ./node_modules
+
+COPY start-prod.sh /usr/src/app/
+RUN chmod +x /usr/src/app/start-prod.sh
+CMD ["/usr/src/app/start-prod.sh"]
