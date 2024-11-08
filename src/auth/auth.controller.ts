@@ -26,6 +26,7 @@ import { IsAuthPresenter } from './auth.presenter';
 import { AuthService } from './auth.service';
 import { AuthResponseDto, LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ErrorCodes } from 'src/errors/error-codes.enum';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -138,7 +139,10 @@ export class AuthController {
   async isAuthenticated(@Query('email') email: string) {
     const user = await this.authService.execute(email);
     if (!user) {
-      throw new UnauthorizedException('User not authenticated');
+      throw new UnauthorizedException({
+        message: 'User not authenticated',
+        code: ErrorCodes.UNAUTHORIZED,
+      });
     }
 
     const response = new IsAuthPresenter();

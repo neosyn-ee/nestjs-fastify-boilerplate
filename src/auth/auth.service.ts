@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -11,6 +12,7 @@ import { JwtTokenService } from 'src/jwt/jwtToken.service';
 import { TypedConfigService } from 'src/config/typed-config.service';
 import { IJwtServicePayload } from 'src/jwt/jwt.interface';
 import { User } from '@prisma/client';
+import { ErrorCodes } from 'src/errors/error-codes.enum';
 
 @Injectable()
 export class AuthService {
@@ -80,7 +82,10 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(email);
     if (!user || !user.hashRefreshToken) {
       this.logger.warn(`Refresh token missing or invalid for user ${email}`);
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException({
+        message: 'Invalid refresh token',
+        code: ErrorCodes.INVALID_REFRESH_TOKEN,
+      });
     }
     const isTokenMatching =
       await this.jwtTokenService.verifyRefreshToken(refreshToken);
@@ -97,7 +102,10 @@ export class AuthService {
       return null;
     }
     if (!user.password) {
-      throw new Error('Password cannot be null or undefined');
+      throw new BadRequestException({
+        message: 'Password cannot be null or undefined',
+        code: ErrorCodes.PASSWORD_NOT_FOUND,
+      });
     }
     const match = await this.bcryptService.compare(pass, user.password);
     if (user && match) {
@@ -116,14 +124,20 @@ export class AuthService {
   async login(email: string, password: string): Promise<AuthResponseDto> {
     const user = await this.userService.getUserByEmail(email);
     if (!user) {
-      throw new NotFoundException(`No user found for email: ${email}`);
+      throw new NotFoundException({
+        message: `No user found for email: ${email}`,
+        code: ErrorCodes.USER_NOT_FOUND,
+      });
     }
 
     if (
       !user.password ||
       !(await this.bcryptService.compare(password, user.password))
     ) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException({
+        message: 'Invalid credentials',
+        code: ErrorCodes.INVALID_CREDENTIALS,
+      });
     }
 
     this.logger.info(`User ${email} logged in successfully`);
@@ -135,7 +149,10 @@ export class AuthService {
   async signIn(email: string, password: string): Promise<AuthResponseDto> {
     const existingUser = await this.userService.getUserByEmail(email);
     if (existingUser) {
-      throw new UnauthorizedException('User already exists');
+      throw new UnauthorizedException({
+        message: 'User already exists',
+        code: ErrorCodes.USER_ALREADY_EXISTS,
+      });
     }
 
     const newUser = await this.userService.createUser({ email, password });

@@ -7,6 +7,7 @@ import { TypedConfigService } from 'src/config/typed-config.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { CookieNames } from 'src/cookie/cookie-names.enum';
 import { AuthService } from 'src/auth/auth.service';
+import { ErrorCodes } from 'src/errors/error-codes.enum';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
@@ -38,7 +39,10 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
           this.logger.warn(
             'Refresh token is missing in both cookies and headers',
           );
-          throw new UnauthorizedException('Refresh token is missing');
+          throw new UnauthorizedException({
+            message: 'Refresh token is missing',
+            code: ErrorCodes.MISSING_REFRESH_TOKEN,
+          });
         },
       ]),
       secretOrKey: JWT_REFRESH_SECRET,
@@ -53,7 +57,10 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 
     if (!refreshToken) {
       this.logger.warn('Refresh token is missing in both cookies and headers');
-      throw new UnauthorizedException('Refresh token is missing');
+      throw new UnauthorizedException({
+        message: 'Refresh token is missing',
+        code: ErrorCodes.MISSING_REFRESH_TOKEN,
+      });
     }
 
     const user = await this.authService.getUserIfRefreshTokenMatches(
@@ -65,6 +72,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
       this.logger.warn(`User not found or hash not correct`);
       throw new UnauthorizedException({
         message: 'User not found or hash not correct',
+        code: ErrorCodes.USER_NOT_FOUND,
       });
     }
 

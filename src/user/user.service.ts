@@ -6,6 +6,7 @@ import {
 import { Prisma, User } from '@prisma/client';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
+import { ErrorCodes } from 'src/errors/error-codes.enum';
 
 export const roundsOfHashing = 10;
 @Injectable()
@@ -16,7 +17,10 @@ export class UserService {
     const trimmedPassword = password.trim();
 
     if (trimmedPassword === '') {
-      throw new BadRequestException('Password cannot be empty');
+      throw new BadRequestException({
+        message: 'Password cannot be empty',
+        code: ErrorCodes.PASSWORD_CANNOT_BE_EMPTY,
+      });
     }
 
     return await bcrypt.hash(trimmedPassword, roundsOfHashing);
@@ -24,13 +28,13 @@ export class UserService {
 
   async createUser(params: Prisma.UserCreateInput): Promise<User> {
     const { email, name } = params;
-
-    // Step 1: Check if the user already exists by email
     const existingUser = await this.repository.findUserByEmail(email);
 
-    // If the user exists, throw an error
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException({
+        message: 'User with this email already exists',
+        code: ErrorCodes.USER_ALREADY_EXISTS,
+      });
     }
 
     const hashedPassword = await this.processPassword(params.password ?? '');

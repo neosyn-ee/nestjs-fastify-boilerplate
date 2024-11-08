@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtService, IJwtServicePayload } from './jwt.interface';
 import { TypedConfigService } from 'src/config/typed-config.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { ErrorCodes } from 'src/errors/error-codes.enum';
 
 @Injectable()
 export class JwtTokenService implements IJwtService {
@@ -26,9 +27,12 @@ export class JwtTokenService implements IJwtService {
         },
       );
       return decodedInfoUser;
-    } catch {
-      this.logger.error('Invalid token');
-      throw new Error('Invalid token');
+    } catch (error) {
+      this.logger.error(`Invalid token: ${error}`);
+      throw new BadRequestException({
+        message: `Invalid token: ${error}`,
+        code: ErrorCodes.INVALID_TOKEN,
+      });
     }
   }
 
