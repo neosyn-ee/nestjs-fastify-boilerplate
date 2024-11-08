@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { createLogger, format, transports } from 'winston';
 import LokiTransport from 'winston-loki';
 import colors from 'colors';
+import { TypedConfigService } from 'src/config/typed-config.service';
 
 @Injectable()
 export class LoggerService {
+  constructor(private readonly configService: TypedConfigService) {}
+
   private readonly logger = createLogger({
     level: 'info',
     format: format.combine(
@@ -62,14 +65,16 @@ export class LoggerService {
     ),
     transports: [
       new LokiTransport({
-        host: 'http://localhost:3100',
-        labels: { job: 'microservice 1', service: 'microservice 1' },
+        host: this.configService.get('LOKI.host'),
+        labels: {
+          job: this.configService.get('APP.name'),
+          service: this.configService.get('APP.name'),
+        },
         json: true,
       }),
       new transports.Console({
-        // Aggiungi questo trasporto per la console
         format: format.combine(
-          format.colorize(), // Abilita il colorization
+          format.colorize(),
           format.printf(({ level, message }) => {
             return `${level}: ${message}`; // Personalizza il formato del messaggio
           }),

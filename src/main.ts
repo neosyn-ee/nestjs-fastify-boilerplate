@@ -5,6 +5,10 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { TypedConfigService } from './config/typed-config.service';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import fastifyCookie from '@fastify/cookie';
+import { CookieNames } from './cookie/cookie-names.enum';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -12,16 +16,39 @@ async function bootstrap() {
     new FastifyAdapter({ logger: false }),
   );
 
+  const configService = app.get(TypedConfigService);
+  const appPort = configService.get('APP.port');
+  const appName = configService.get('APP.name');
+  const appVersion = configService.get('APP.version');
+  const appDescription = configService.get('APP.description');
+  const appJwt = configService.get('APP.jwt');
+
+  await app.register(fastifyCookie, {
+    secret: appJwt, // for cookies signature
+  });
+
+  const microservice = app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: 'localhost', // Cambia con l'host desiderato
+      port: 3002, // Porta per il microservizio
+    },
+  });
+
+  //FIXME: remove this line (issue: @typescript-eslint/no-unused-vars)
+  console.log(microservice);
+
   const config = new DocumentBuilder()
-    .setTitle('Test example')
-    .setDescription('The test API description')
-    .setVersion('1.0')
+    .setTitle(appName)
+    .setDescription(appDescription)
+    .setVersion(appVersion)
+    .addCookieAuth(CookieNames.AccessToken)
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     jsonDocumentUrl: 'swagger/json',
   });
 
-  await app.listen(3002, '0.0.0.0');
+  await app.listen(appPort, '0.0.0.0');
 }
 bootstrap();
