@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Post,
-  Req,
+  Query,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -12,19 +12,19 @@ import {
   ApiBody,
   ApiCookieAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { AuthService } from './auth.service';
-import { AuthResponseDto, LoginDto } from './dto/login.dto';
-import { IsAuthPresenter } from './auth.presenter';
-import { IsAuthenticatedQueryDto } from './dto/is-authenticated-query.dto';
+import { FastifyReply } from 'fastify';
+import { CookieNames } from 'src/cookie/cookie-names.enum';
 import { CookieService } from 'src/cookie/cookie.service';
 import { JwtGuard } from 'src/jwt/guard/jwtAuth.guard';
 import JwtRefreshGuard from 'src/jwt/guard/jwtRefresh.guard';
-import { CookieNames } from 'src/cookie/cookie-names.enum';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { IsAuthPresenter } from './auth.presenter';
+import { AuthService } from './auth.service';
+import { AuthResponseDto, LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
@@ -59,7 +59,7 @@ export class AuthController {
     this.cookieService.setCookie(reply, CookieNames.AccessToken, accessToken);
     this.cookieService.setCookie(reply, CookieNames.RefreshToken, refreshToken);
 
-    reply.send({ accessToken, refreshToken });
+    reply.send({ message: 'Login successful' });
   }
 
   @Post('signIn')
@@ -123,17 +123,24 @@ export class AuthController {
   @Get('is_authenticated')
   @ApiCookieAuth()
   @UseGuards(JwtGuard)
-  @ApiOperation({ description: 'is_authenticated' })
-  async isAuthenticated(
-    @Req()
-    request: FastifyRequest<{
-      Querystring: { queryObj: IsAuthenticatedQueryDto };
-    }>,
-  ) {
-    const user = await this.authService.execute(request.query.queryObj.email);
+  @ApiOperation({
+    summary: 'User is authenticated',
+    description:
+      'Checks if the user is authenticated using a JWT token. This endpoint requires an email as a query parameter to identify the user and verify their authentication status. Returns user details if authenticated; otherwise, throws a 401 Unauthorized error.',
+  })
+  @ApiQuery({
+    name: 'email',
+    type: String,
+    required: true,
+    description: 'User email to be verified',
+    example: 'john.doe@example.com',
+  })
+  async isAuthenticated(@Query('email') email: string) {
+    const user = await this.authService.execute(email);
     if (!user) {
       throw new UnauthorizedException('User not authenticated');
     }
+
     const response = new IsAuthPresenter();
     response.email = user.email;
     return response;
