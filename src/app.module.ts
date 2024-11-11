@@ -51,8 +51,8 @@ import { TypedConfigService } from './config/typed-config.service';
         useFactory: async (configService: TypedConfigService) => ({
           transport: Transport.TCP,
           options: {
-            host: configService.get('APP.host'),
-            port: configService.get('APP.port'),
+            host: configService.get('BOILERPLATE_MICROSERVICE.host'),
+            port: configService.get('BOILERPLATE_MICROSERVICE.port'),
           },
         }),
         inject: [TypedConfigService],

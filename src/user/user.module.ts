@@ -5,10 +5,11 @@ import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 import { LoggerModule } from 'src/logger/logger.module';
 import { JwtService } from '@nestjs/jwt';
+import { UserTcpController } from './userTcp.controller';
 
 @Module({
   imports: [LoggerModule],
-  controllers: [UserController],
+  controllers: [UserController, UserTcpController],
   providers: [PrismaClient, UserService, UserRepository, JwtService],
   exports: [UserRepository, UserService],
 })

@@ -18,3 +18,7 @@ export interface DatabaseConfig {
 export interface LokiConfig {
   host: string;
 }
+export interface MicroserviceConfig {
+  host: string;
+  port: string;
+}
