@@ -3,6 +3,7 @@ export enum ConfigKey {
   Db = 'DB',
   Loki = 'LOKI',
   BoilerplateMicroservice = 'BOILERPLATE_MICROSERVICE',
+  Http = 'HTTP',
 }
 
 export enum Environment {

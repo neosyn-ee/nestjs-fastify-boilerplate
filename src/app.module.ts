@@ -18,6 +18,7 @@ import { CookieModule } from './cookie/cookie.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { TypedConfigService } from './config/typed-config.service';
+import { CustomHttpModule } from './customHttp/customHttp.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { TypedConfigService } from './config/typed-config.service';
         extraProviders: [TypedConfigService],
       },
     ]),
+    CustomHttpModule,
   ],
   providers: [
     DatabaseService,

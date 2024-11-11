@@ -2,6 +2,7 @@ import { registerAs } from '@nestjs/config';
 import {
   AppConfig,
   DatabaseConfig,
+  HttpConfig,
   LokiConfig,
   MicroserviceConfig,
 } from './config.interface';
@@ -40,6 +41,14 @@ const LokiConfig = registerAs(
   }),
 );
 
+const HttpConfig = registerAs(
+  ConfigKey.Http,
+  (): HttpConfig => ({
+    maxRedirects: Number(process.env.HTTP_MAX_REDIRECTS) || 5,
+    timeout: Number(process.env.HTTP_TIMEOUT) || 5000,
+  }),
+);
+
 const MicroserviceConfig = registerAs(
   ConfigKey.BoilerplateMicroservice,
   (): MicroserviceConfig => ({
@@ -53,4 +62,5 @@ export const configurations = [
   DBConfig,
   LokiConfig,
   MicroserviceConfig,
+  HttpConfig,
 ];

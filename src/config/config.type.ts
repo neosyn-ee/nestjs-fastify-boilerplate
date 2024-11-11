@@ -2,6 +2,7 @@ import { ConfigKey } from './config.enum';
 import {
   AppConfig,
   DatabaseConfig,
+  HttpConfig,
   LokiConfig,
   MicroserviceConfig,
 } from './config.interface';
@@ -36,6 +37,7 @@ export type DottedPathToValue<
 export type EnvironmentVariables = Record<ConfigKey.App, AppConfig> &
   Record<ConfigKey.Db, DatabaseConfig> &
   Record<ConfigKey.Loki, LokiConfig> &
+  Record<ConfigKey.Http, HttpConfig> &
   Record<ConfigKey.BoilerplateMicroservice, MicroserviceConfig>;
 
 export type DottedLanguageObjectStringPaths = Join<
