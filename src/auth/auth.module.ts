@@ -14,6 +14,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtRefreshTokenStrategy } from 'src/jwt/guard/jwtRefresh.strategy';
 import { JwtStrategy } from 'src/jwt/guard/jwt.strategy';
 import { CookieService } from 'src/cookie/cookie.service';
+import { HttpModule } from 'src/customHttp/http.module';
 
 @Module({
   imports: [
@@ -28,6 +29,13 @@ import { CookieService } from 'src/cookie/cookie.service';
         secret: configService.get('APP.jwt'),
         signOptions: { expiresIn: configService.get('APP.jwtExpiresIn') },
       }),
+    }),
+    HttpModule.forFeature({
+      serviceName: 'CustomHttpService',
+      config: {
+        baseURL: 'https://api.example.com',
+        enableLogging: true,
+      },
     }),
   ],
   controllers: [AuthController],

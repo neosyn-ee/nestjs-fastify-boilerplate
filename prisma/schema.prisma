@@ -26,14 +26,14 @@ model Profile {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  role    Role     @default(USER)
-  posts   Post[]
-  profile Profile?
-  password String?
+  id               Int      @id @default(autoincrement())
+  email            String   @unique
+  name             String?
+  role             Role     @default(USER)
+  password         String?
   hashRefreshToken String?
+  posts            Post[]
+  profile          Profile?
 }
 
 model Tenant {

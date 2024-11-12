@@ -18,7 +18,7 @@ import { CookieModule } from './cookie/cookie.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { TypedConfigService } from './config/typed-config.service';
-import { CustomHttpModule } from './customHttp/customHttp.module';
+import { HttpModule } from './customHttp/http.module';
 
 @Module({
   imports: [
@@ -60,7 +60,13 @@ import { CustomHttpModule } from './customHttp/customHttp.module';
         extraProviders: [TypedConfigService],
       },
     ]),
-    CustomHttpModule,
+    HttpModule.forFeature({
+      serviceName: 'CustomHttpService',
+      config: {
+        baseURL: 'https://api.example.com',
+        enableLogging: true,
+      },
+    }),
   ],
   providers: [
     DatabaseService,
