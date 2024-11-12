@@ -18,3 +18,12 @@ export interface DatabaseConfig {
 export interface LokiConfig {
   host: string;
 }
+export interface HttpConfig {
+  timeout: number;
+  maxRedirects: number;
+}
+
+export interface MicroserviceConfig {
+  host: string;
+  port: string;
+}

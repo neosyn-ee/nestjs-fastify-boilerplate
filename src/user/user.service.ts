@@ -1,17 +1,23 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { ErrorCodes } from 'src/errors/error-codes.enum';
+import { HttpService } from '@nestjs/axios';
 
 export const roundsOfHashing = 10;
 @Injectable()
 export class UserService {
-  constructor(private repository: UserRepository) {}
+  constructor(
+    private repository: UserRepository,
+    @Inject('CustomHttpService')
+    private readonly httpService: HttpService,
+  ) {}
 
   private async processPassword(password: string): Promise<string> {
     const trimmedPassword = password.trim();

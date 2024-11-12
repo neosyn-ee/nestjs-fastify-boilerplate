@@ -2,6 +2,7 @@ import { plainToClass } from 'class-transformer';
 import {
   IsDefined,
   IsEnum,
+  IsNumber,
   IsNumberString,
   IsString,
   MinLength,
@@ -70,6 +71,14 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   LOKI_HOST: string;
+
+  @IsDefined()
+  @IsNumber()
+  HTTP_TIMEOUT: number;
+
+  @IsDefined()
+  @IsNumber()
+  HTTP_MAX_REDIRECTS: number;
 }
 
 export function validateConfig(configuration: Record<string, unknown>) {

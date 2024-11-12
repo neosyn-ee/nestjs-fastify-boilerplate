@@ -1,5 +1,11 @@
 import { registerAs } from '@nestjs/config';
-import { AppConfig, DatabaseConfig, LokiConfig } from './config.interface';
+import {
+  AppConfig,
+  DatabaseConfig,
+  HttpConfig,
+  LokiConfig,
+  MicroserviceConfig,
+} from './config.interface';
 import { ConfigKey, Environment } from './config.enum';
 
 const APPConfig = registerAs(
@@ -35,4 +41,26 @@ const LokiConfig = registerAs(
   }),
 );
 
-export const configurations = [APPConfig, DBConfig, LokiConfig];
+const HttpConfig = registerAs(
+  ConfigKey.Http,
+  (): HttpConfig => ({
+    maxRedirects: Number(process.env.HTTP_MAX_REDIRECTS) || 5,
+    timeout: Number(process.env.HTTP_TIMEOUT) || 5000,
+  }),
+);
+
+const MicroserviceConfig = registerAs(
+  ConfigKey.BoilerplateMicroservice,
+  (): MicroserviceConfig => ({
+    host: process.env.BOILERPLATE_MICROSERVICE_HOST || '',
+    port: process.env.BOILERPLATE_MICROSERVICE_PORT || '',
+  }),
+);
+
+export const configurations = [
+  APPConfig,
+  DBConfig,
+  LokiConfig,
+  MicroserviceConfig,
+  HttpConfig,
+];
