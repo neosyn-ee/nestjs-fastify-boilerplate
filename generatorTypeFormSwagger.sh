@@ -8,9 +8,6 @@ SWAGGER_URLS=(
 # Destination folder for the generated types
 OUTPUT_DIR="./src/api"
 
-# Name of the output file for the generated types
-OUTPUT_FILE="apiTypes.ts"
-
 # Loop through each URL and generate the types
 for SWAGGER_URL in "${SWAGGER_URLS[@]}"; do
     echo "Downloading Swagger file from $SWAGGER_URL..."
@@ -41,7 +38,7 @@ for SWAGGER_URL in "${SWAGGER_URLS[@]}"; do
         
         # Generate the TypeScript types from the downloaded Swagger JSON file
         echo "Generating TypeScript types for $SERVICE_NAME..."
-        npx swagger-typescript-api -p ./swagger.json -o "$OUTPUT_DIR/$SERVICE_NAME" -n "$OUTPUT_FILE"
+        npx openapi-generator-cli generate -i ./swagger.json -g typescript-axios -o "$OUTPUT_DIR/$SERVICE_NAME"
         
         # Clean up the temporary Swagger file
         rm swagger.json
