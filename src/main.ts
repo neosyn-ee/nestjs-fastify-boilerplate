@@ -10,14 +10,31 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import fastifyCookie from '@fastify/cookie';
 import { CookieNames } from './cookie/cookie-names.enum';
 import { LoggerService } from './logger/logger.service';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false }),
   );
-  app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      stopAtFirstError: true,
+      exceptionFactory(errors) {
+        const message = errors
+          .map((error: ValidationError) =>
+            error.constraints
+              ? Object.values(error.constraints)
+              : error.children?.map((error: ValidationError) =>
+                  Object.values(error.constraints ?? {}),
+                ),
+          )
+          .join(', ');
+        return new BadRequestException(message);
+      },
+    }),
+  );
 
   const configService = app.get(TypedConfigService);
   const logger = app.get(LoggerService);
