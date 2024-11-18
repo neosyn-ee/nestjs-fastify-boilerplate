@@ -10,12 +10,14 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import fastifyCookie from '@fastify/cookie';
 import { CookieNames } from './cookie/cookie-names.enum';
 import { LoggerService } from './logger/logger.service';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false }),
   );
+  app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
 
   const configService = app.get(TypedConfigService);
   const logger = app.get(LoggerService);
