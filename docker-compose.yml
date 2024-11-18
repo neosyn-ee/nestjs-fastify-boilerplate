@@ -16,6 +16,7 @@ services:
       dockerfile: Dockerfile.local
     ports:
       - "3002:3002"
+      - "9290:9290"
     volumes:
       - ./:/app
       - /app/node_modules
