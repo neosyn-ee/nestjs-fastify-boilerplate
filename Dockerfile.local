@@ -16,8 +16,6 @@ RUN yarn install
 RUN yarn build-local
 
 # Expose the port on which the app will run
-EXPOSE 3002
+EXPOSE 3002 9290
 
-COPY start-local.sh /usr/src/app/
-RUN chmod +x /usr/src/app/start-local.sh
-CMD ["/usr/src/app/start-local.sh"]
+CMD ["yarn", "start:dev:debug"]
