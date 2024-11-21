@@ -1,7 +1,7 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { HttpModule as NestHttpModule } from '@nestjs/axios';
-import { IHttpModuleOptions } from './axios.interface';
 import { HttpService } from './http.service';
+import { IHttpModuleAsyncOptions, IHttpModuleOptions } from './http.type';
 
 /**
  * Represents a module for handling HTTP requests and responses.
@@ -20,6 +20,26 @@ export class HttpModule {
         },
       ],
       exports: [providerName],
+    };
+  }
+  static forRootAsync(options: IHttpModuleAsyncOptions): DynamicModule {
+    return {
+      module: HttpModule,
+      imports: [NestHttpModule],
+      providers: [
+        ...options.providers,
+        {
+          provide: 'HTTP_CONFIG',
+          useFactory: options.useFactory,
+          inject: options.inject,
+        },
+        {
+          provide: HttpService,
+          useFactory: (config: IHttpModuleOptions) => new HttpService(config),
+          inject: ['HTTP_CONFIG'],
+        },
+      ],
+      exports: [HttpService],
     };
   }
 

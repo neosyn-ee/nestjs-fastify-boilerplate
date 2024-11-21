@@ -5,8 +5,9 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios';
-import { Injectable, Logger } from '@nestjs/common';
-import { IHttpModuleOptions } from './axios.interface';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { IHttpModuleOptions } from './http.type';
+import { ErrorCodes } from '@neosyn-ee/event-management-type-nestjs';
 
 @Injectable()
 export class HttpService {
@@ -34,6 +35,48 @@ export class HttpService {
       this.logger = logger;
     } else {
       this.logger = new Logger(serviceName || HttpService.name);
+    }
+  }
+
+  /**
+   * Handles Axios errors by throwing the appropriate HttpException.
+   * @param error - The Axios error.
+   * @returns A rejected Promise with the appropriate HttpException.
+   */
+  private handleHttpError<R>(error: any): Promise<R> {
+    /**
+     * Handle the error appropriately.
+     */
+    if (error.response) {
+      /**
+       * If there is a response (server-side error, 4xx or 5xx).
+       * Throw an HttpException with the status code and message from the response.
+       */
+      throw new HttpException(error.response.data, error.response.status);
+    } else if (error.request) {
+      /**
+       * If there is no response (network error or timeout).
+       * Throw a new HttpException indicating network failure or timeout.
+       */
+      throw new HttpException(
+        {
+          message: 'Network Error or Timeout',
+          code: ErrorCodes.NETWORK_ERROR,
+        },
+        HttpStatus.SERVICE_UNAVAILABLE, // 503 Service Unavailable
+      );
+    } else {
+      /**
+       * If an error occurred during the request setup (config error).
+       * Throw an HttpException with an internal server error status.
+       */
+      throw new HttpException(
+        {
+          message: error.message,
+          code: ErrorCodes.REQUEST_SETUP_ERROR,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
+      );
     }
   }
 
@@ -89,7 +132,14 @@ export class HttpService {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.axiosInstance.get<T, R, D>(url, config);
+    try {
+      /**
+       * Make the GET request and return the response.
+       */
+      return await this.axiosInstance.get<T, R, D>(url, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -104,7 +154,11 @@ export class HttpService {
     data?: D,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.post<T, R, D>(url, data, config);
+    try {
+      return this.axiosInstance.post<T, R, D>(url, data, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -119,7 +173,11 @@ export class HttpService {
     data?: D,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.put<T, R, D>(url, data, config);
+    try {
+      return this.axiosInstance.put<T, R, D>(url, data, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -134,7 +192,11 @@ export class HttpService {
     data?: D,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.patch<T, R, D>(url, data, config);
+    try {
+      return this.axiosInstance.patch<T, R, D>(url, data, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -160,7 +222,11 @@ export class HttpService {
     url: string,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.options<T, R, D>(url, config);
+    try {
+      return this.axiosInstance.options<T, R, D>(url, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -175,7 +241,11 @@ export class HttpService {
     data?: D,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.postForm<T, R, D>(url, data, config);
+    try {
+      return this.axiosInstance.postForm<T, R, D>(url, data, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -190,7 +260,11 @@ export class HttpService {
     data?: D,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.putForm<T, R, D>(url, data, config);
+    try {
+      return this.axiosInstance.putForm<T, R, D>(url, data, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 
   /**
@@ -205,6 +279,10 @@ export class HttpService {
     data?: D,
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
-    return this.axiosInstance.patchForm<T, R, D>(url, data, config);
+    try {
+      return this.axiosInstance.patchForm<T, R, D>(url, data, config);
+    } catch (error) {
+      return this.handleHttpError(error);
+    }
   }
 }
