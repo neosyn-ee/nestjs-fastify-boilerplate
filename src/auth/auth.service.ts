@@ -146,7 +146,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signIn(email: string, password: string): Promise<AuthResponseDto> {
+  async signUp(email: string, password: string): Promise<AuthResponseDto> {
     const existingUser = await this.userService.getUserByEmail(email);
     if (existingUser) {
       throw new UnauthorizedException({
