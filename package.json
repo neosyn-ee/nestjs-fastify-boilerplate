@@ -36,7 +36,8 @@
     "prisma:seed:dev": "dotenv -e .env.development -- ts-node prisma/seed.ts",
     "prisma:seed:local": "dotenv -e .env.local -- ts-node prisma/seed.ts",
     "prepare": "husky",
-    "swagger:generateTypesMicroservice": "bash ./generatorTypeFormSwagger.sh"
+    "swagger:generateTypesMicroservice": "bash ./generatorTypeFormSwagger.sh",
+    "docker:start:local": "docker-compose --env-file ./.env.local up --build -d"
   },
   "dependencies": {
     "@fastify/cookie": "^9.4.0",
@@ -52,7 +53,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-fastify": "^10.4.7",
     "@nestjs/swagger": "^7.4.2",
-    "@prisma/client": "^5.21.1",
+    "@prisma/client": "^6.1.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -100,7 +101,7 @@
     "lint-staged": "^15.2.10",
     "pg": "^8.13.0",
     "prettier": "^3.0.0",
-    "prisma": "^5.21.1",
+    "prisma": "^6.1.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.1.0",

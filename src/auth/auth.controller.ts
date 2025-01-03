@@ -63,14 +63,14 @@ export class AuthController {
     reply.send({ message: 'Login successful' });
   }
 
-  @Post('signIn')
+  @Post('signUp')
   @ApiOperation({
-    summary: 'User sign in',
+    summary: 'User sign up',
     description:
-      'Allows a user to sign in by providing their credentials (email and password). Upon successful authentication, the user receives an access token and a refresh token. The access token grants access to protected resources, while the refresh token can be used to obtain a new access token without re-authenticating.',
+      'Allows a user to sign up by providing their email and password. Upon successful sign-up, the user receives an access token that grants access to protected resources. This access token should be included in the Authorization header of subsequent requests to authenticate the user.',
   })
   @ApiBody({
-    description: 'User sign in credentials',
+    description: 'User sign up details',
     type: CreateUserDto,
     required: true,
   })
@@ -87,11 +87,11 @@ export class AuthController {
     status: 401,
     description: 'Invalid password or unauthorized access',
   })
-  async signIn(
+  async signUp(
     @Body() { email, password }: CreateUserDto,
     @Res({ passthrough: true }) reply: FastifyReply,
   ) {
-    const { accessToken, refreshToken } = await this.authService.signIn(
+    const { accessToken, refreshToken } = await this.authService.signUp(
       email,
       password,
     );
