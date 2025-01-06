@@ -18,4 +18,4 @@ RUN yarn build-local
 # Expose the port on which the app will run
 EXPOSE 3002 9290
 
-CMD ["yarn", "start:dev:debug"]
+CMD ["yarn", "start:local:debug"]
