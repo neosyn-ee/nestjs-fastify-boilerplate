@@ -23,4 +23,4 @@ ENV DEBUG_PORT=9290
 EXPOSE ${APP_PORT}
 EXPOSE ${DEBUG_PORT}
 
-CMD ["yarn", "start:local:debug"]
+CMD ["yarn", "start:local:docker:watch:debug"]
