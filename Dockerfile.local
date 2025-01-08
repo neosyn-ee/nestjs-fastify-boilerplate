@@ -15,7 +15,12 @@ RUN yarn install
 # Creates a "dist" folder with the production build
 RUN yarn build-local
 
-# Expose the port on which the app will run
-EXPOSE 3002 9290
+# Set default ports via environment variables (optional)
+ENV APP_PORT=3002
+ENV DEBUG_PORT=9290
+
+# Expose both the main and debug ports using the environment variables
+EXPOSE ${APP_PORT}
+EXPOSE ${DEBUG_PORT}
 
 CMD ["yarn", "start:local:debug"]

@@ -18,7 +18,7 @@ const APPConfig = registerAs(
     name: process.env.APP_NAME || 'Nestjs fastify boilerplate',
     description: process.env.APP_DESCRIPTION || 'Nestjs fastify boilerplate',
     version: process.env.APP_VERSION || '1.0',
-    host: process.env.APP_URL || 'localhost',
+    host: process.env.APP_HOST || 'localhost',
     jwt: process.env.APP_JWT || '',
     jwtExpiresIn: process.env.APP_JWT_EXPIRES_IN || '60s',
     jwtRefreshToken: process.env.APP_JWT_REFRESH_TOKEN || '',

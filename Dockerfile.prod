@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:18.19.0-slim  AS build_amd64
+FROM --platform=linux/amd64 node:20.15.1-slim  AS build_amd64
 
 WORKDIR /app
 
@@ -14,11 +14,17 @@ COPY --chown=node:node . .
 
 RUN yarn build-prod
 
-EXPOSE 3002
+# Set default ports via environment variables (optional)
+ENV APP_PORT=3002
+ENV DEBUG_PORT=9290
+
+# Expose both the main and debug ports using the environment variables
+EXPOSE ${APP_PORT}
+EXPOSE ${DEBUG_PORT}
 
 CMD [ "yarn", "start:prod" ]
 
-FROM --platform=linux/amd64 node:18.19.0-slim AS production
+FROM --platform=linux/amd64 node:20.15.1-slim AS production
 
 WORKDIR /app
 
