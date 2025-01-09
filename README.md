@@ -10,6 +10,33 @@ Questo progetto è un boilerplate per applicazioni **NestJS** che utilizzano mic
 - **Prisma ORM**: Gestione delle entità e delle operazioni CRUD tramite Prisma ORM, con migrazioni automatiche.
 - **@nestjs/config**: Gestione delle configurazioni centralizzata con supporto per variabili di ambiente tramite file `.env`.
 
+## ⚠️ Attenzione sull'uso dei file `.env`
+
+Quando si utilizzano file `.env` con estensioni specifiche per diversi ambienti (es. `.env.development`, `.env.preprod`, `.env.production`), **i file con suffisso `.docker` devono essere sempre prioritari** nel caricamento, poiché sono destinati agli ambienti containerizzati (es. Docker).
+
+### Linea guida:
+
+- Se esiste un file `.env.NOME_ENVIRONMENT.docker`, questo deve essere sempre **caricato prima** degli altri file `.env`.
+- Ad esempio:
+  - In un ambiente Docker, se esistono sia `.env.local` che `.env.local.docker`, il file `.env.local.docker` deve essere prioritario.
+
+Per garantire questa priorità, assicurati di configurare il modulo `ConfigModule` in NestJS come segue:
+
+```typescript
+ConfigModule.forRoot({
+  envFilePath: [
+    '.env.local.docker', // File prioritario
+    '.env.local',
+    '.env.development',
+    '.env.preprod',
+    '.env.production',
+  ],
+  isGlobal: true,
+});
+```
+
+Inoltre, quando avvii il container Docker, verifica che NODE_ENV sia impostato correttamente per selezionare il file .env giusto.
+
 ## Prerequisiti
 
 Prima di iniziare, assicurati di avere installato:

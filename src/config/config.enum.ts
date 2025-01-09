@@ -11,4 +11,5 @@ export enum Environment {
   Development = 'development',
   Preprod = 'preprod',
   Production = 'production',
+  Docker = 'docker',
 }
