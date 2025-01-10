@@ -65,6 +65,7 @@ Prima di iniziare, assicurati di avere installato:
 - Crea un file .env nella root del progetto copiando il modello:
   ```bash
   cp .env.example .env.local
+  cp .env.example.docker .env.docker.local
   cp .env.example .env.development
   cp .env.example .env.preprod
   cp .env.example .env.production
