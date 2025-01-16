@@ -68,6 +68,7 @@ async function bootstrap() {
     .setDescription(appDescription)
     .setVersion(appVersion)
     .addCookieAuth(CookieNames.AccessToken)
+    .addServer('http://server:3002')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
