@@ -12,6 +12,7 @@ import { CookieNames } from './cookie/cookie-names.enum';
 import { LoggerService } from './logger/logger.service';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
+import { HttpExceptionFilter } from './customHttp/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -35,6 +36,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const configService = app.get(TypedConfigService);
   const logger = app.get(LoggerService);
