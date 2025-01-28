@@ -99,3 +99,79 @@ Il progetto utilizza una classe astratta per implementare il Repository Pattern.
 ### Classe Astratta: BaseRepository
 
 La classe astratta BaseRepository include metodi generici per operazioni CRUD comuni. I repository specifici delle entità possono estendere questa classe per implementare operazioni personalizzate.
+
+### Documentazione API con Swagger
+
+Il progetto integra Swagger (OpenAPI 3.0) per la documentazione automatica delle API, con configurazioni avanzate che includono:
+
+- Generazione automatica della documentazione dai decoratori NestJS
+- Supporto per la validazione degli schemi di richiesta/risposta
+- Generazione di tipi TypeScript dallo schema OpenAPI
+
+#### Configurazione Base
+
+La documentazione viene generata automaticamente usando i decoratori @nestjs/swagger nei controller:
+
+```ts
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+
+@ApiTags('Users')
+@Controller('users')
+export class UsersController {
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: UserResponseDto,
+  })
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+}
+```
+
+### Accesso alla Documentazione
+
+La UI interattiva di Swagger è disponibile all'endpoint:
+
+```bash
+http://localhost:3000/api
+```
+
+### Generazione Tipi TypeScript da altri microservizi
+
+1. Aprire il file generatorTypeFormSwagger.sh e inserire l'url di swagger nell array
+
+```bash
+SWAGGER_URLS=(
+    "http://localhost:3002/swagger/json"
+)
+```
+
+2. lanciare questo comando
+
+```bash
+bash ./generatorTypeFormSwagger.sh
+```
+
+3. verrà creata la folder api dove all'interno troverai una folder con il nome del microservizio
+
+### Best Practices
+
+1. Decoratori Espliciti: Usa sempre @ApiProperty() nei DTO
+2. Descrizioni Dettagliate: Fornisce esempi e descrizioni nei decoratori
+3. Sicurezza: Proteggi l'endpoint /api in produzione
+4. Validazione: Abilita la trasformazione automatica dei DTO
+
+````ts
+// Esempio DTO con validazione
+export class CreateUserDto {
+  @ApiProperty({
+    example: 'user@example.com',
+    description: 'User email address'
+  })
+  @IsEmail()
+  email: string;
+}```
+````
