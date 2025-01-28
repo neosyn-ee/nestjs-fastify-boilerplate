@@ -73,15 +73,15 @@ Prima di iniziare, assicurati di avere installato:
 
 5. Esegui il pull del database:
    ```bash
-   yarn prisma:pull:dev
+   yarn prisma:local:pull
    ```
 6. Esegui la generazione dei tipi per prisma client:
    ```bash
-   yarn prisma:generate:dev
+   yarn prisma:local:generate
    ```
 7. Avvia l’applicazione:
    ```bash
-   yarn start:dev or yarn start:debug
+   yarn start:local or yarn start:local:watch
    ```
 
 ## Struttura del Progetto
@@ -89,8 +89,8 @@ Prima di iniziare, assicurati di avere installato:
 Il boilerplate è organizzato in modo modulare per supportare la crescita del progetto. Ecco i principali componenti:
 
 - **src/app.module.ts:** Modulo principale che importa e configura tutti gli altri moduli (es. microservizi, moduli di database).
-- **src/prisma/:** Modulo per l’integrazione di Prisma ORM.
-- **src/repositories/:** Implementazione del Repository Pattern utilizzando Prisma ORM per l'accesso ai dati.
+- **src/database/:** Modulo per l’integrazione di Prisma ORM.
+- **src/database/base.abstract.repository.ts** Implementazione del Repository Pattern utilizzando Prisma ORM per l'accesso ai dati.
 
 ### Repository Pattern con Classe Astratta
 
