@@ -5256,10 +5256,10 @@ nestjs-cls@^4.4.1:
   resolved "https://registry.yarnpkg.com/nestjs-cls/-/nestjs-cls-4.4.1.tgz#ce0affa15e8565cfee74336746c058feaaeb2d9d"
   integrity sha512-4yhldwm/cJ02lQ8ZAdM8KQ7gMfjAc1z3fo5QAQgXNyN4N6X5So9BCwv+BTLRugDCkELUo3qtzQHnKhGYL/ftPg==
 
-nestjs-prisma@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/nestjs-prisma/-/nestjs-prisma-0.23.0.tgz#432bbb6e616619f7b9e3d7106c205d49b85e5657"
-  integrity sha512-0pIMDasayP+vMFSztcs85zu4WSPTKM85F8vIrqn7GsUBboEcKhI8eCeVghhNyKDGzEBaNAYNJlo2MAWdNuN7Tw==
+nestjs-prisma@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/nestjs-prisma/-/nestjs-prisma-0.24.0.tgz#bdfb91ef1ff50477216d493b4d353e662ead6d73"
+  integrity sha512-5lxWsQMD49PTB7c3y9QrawwTqRPs/rX4ix4JIDSSYLgH1TAF3s7VC65xAXm26teZUvcvNerTbO6PBt2o8RZF1g==
   dependencies:
     "@angular-devkit/core" "^13.3.0"
     "@angular-devkit/schematics" "^13.3.0"
