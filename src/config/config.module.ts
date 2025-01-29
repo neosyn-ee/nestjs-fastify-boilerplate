@@ -10,7 +10,7 @@ import { TypedConfigService } from './typed-config.service';
       isGlobal: true,
       load: [...configurations],
       envFilePath: [
-        '.env.docker.local',
+        '.env.local.docker',
         '.env.local',
         '.env.development',
         '.env.preprod',
