@@ -25,7 +25,7 @@ Per garantire questa priorità, assicurati di configurare il modulo `ConfigModul
 ```typescript
 ConfigModule.forRoot({
   envFilePath: [
-    '.env.local.docker', // File prioritario
+    '.env.docker.local', // File prioritario
     '.env.local',
     '.env.development',
     '.env.preprod',
