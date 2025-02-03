@@ -15,19 +15,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     let status =
       exception instanceof HttpException ? exception.getStatus() : 500;
-    let description =
+    let message =
       exception instanceof HttpException
         ? exception.message
         : 'Internal server error';
 
     if (exception.response) {
       status = exception.response.status || status;
-      description = exception.response.data || description;
+      message = exception.response.data || message;
     }
 
     response.status(status).send({
       path: request.url,
-      description,
+      message,
       code: exception.response.code,
     });
   }
