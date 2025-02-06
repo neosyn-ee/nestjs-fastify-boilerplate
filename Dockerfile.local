@@ -13,8 +13,8 @@ RUN yarn install
 COPY . .
 
 # Set default ports via environment variables (optional)
-ENV APP_PORT=3004
-ENV DEBUG_PORT=9231
+ENV APP_PORT=3002
+ENV DEBUG_PORT=9229
 
 # Expose both the main and debug ports using the environment variables
 EXPOSE ${APP_PORT}
