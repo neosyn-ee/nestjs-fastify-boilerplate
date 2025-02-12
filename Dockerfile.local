@@ -12,12 +12,8 @@ RUN yarn install
 # Bundle app source
 COPY . .
 
-# Set default ports via environment variables (optional)
-ENV APP_PORT=3002
-ENV DEBUG_PORT=9229
-
 # Expose both the main and debug ports using the environment variables
-EXPOSE ${APP_PORT}
-EXPOSE ${DEBUG_PORT}
+EXPOSE $APP_PORT
+EXPOSE $DEBUG_PORT
 
-CMD ["sh", "-c", "yarn prisma:local:docker:pull && yarn prisma:local:docker:generate && yarn start:local:docker:watch:debug"]
+CMD ["sh", "-c", "yarn prisma:local:docker:generate && yarn start:local:docker:watch:debug"]
